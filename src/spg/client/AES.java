@@ -1,12 +1,11 @@
 package spg.client;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Random;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -14,17 +13,18 @@ import javax.crypto.spec.SecretKeySpec;
 public class AES {
 
     private SecretKeySpec secretKey;
-    private byte[] key;
 
     public void setKey(final String myKey) {
-        MessageDigest sha = null;
+        MessageDigest sha;
+        byte[] key;
+
         try {
-            key = myKey.getBytes("UTF-8");
+            key = myKey.getBytes(StandardCharsets.UTF_8);
             sha = MessageDigest.getInstance("SHA-1");
             key = sha.digest(key);
             key = Arrays.copyOf(key, 16);
             secretKey = new SecretKeySpec(key, "AES");
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
     }
@@ -35,9 +35,9 @@ public class AES {
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             return Base64.getEncoder()
-                    .encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
+                    .encodeToString(cipher.doFinal(strToEncrypt.getBytes(StandardCharsets.UTF_8)));
         } catch (Exception e) {
-            System.out.println("Error while encrypting: " + e.toString());
+            System.out.println("Error while encrypting: " + e);
         }
         return null;
     }
@@ -50,19 +50,19 @@ public class AES {
             return new String(cipher.doFinal(Base64.getDecoder()
                     .decode(strToDecrypt)));
         } catch (Exception e) {
-            System.out.println("Error while decrypting: " + e.toString());
+            System.out.println("Error while decrypting: " + e);
         }
         return null;
     }
 
     public static String genKey(){
-        String key="";
+        StringBuilder key= new StringBuilder();
         SecureRandom r= new SecureRandom();
         for (int i=0;i<64;i++) {
             int x = r.nextInt(129);
 
-            key += (char) x;
+            key.append((char) x);
         }
-        return key;
+        return key.toString();
     }
 }

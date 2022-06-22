@@ -10,7 +10,8 @@ public class ClientMain {
     private String username="anonymus";
 
     private BigInteger privateKey;
-    public final BigInteger publicKey;  //muss noch schauen wie ich die Keys gut generiere (private ist d und public ist e)
+    public final BigInteger publicKey;
+    public final BigInteger N;
 
     public static void main(String[] args) {
         new ClientMain("boiisserver2020.ddns.net", 6666).start();
@@ -20,7 +21,7 @@ public class ClientMain {
         BigInteger[] temp= RSA.genKeyPair_plusN();
         this.privateKey=temp[0];
         this.publicKey=temp[1];
-
+        this.N= temp[2];
 
 
         this.host = host;
@@ -40,6 +41,11 @@ public class ClientMain {
             System.err.println("Could not connect to server");
         }
     }
+    public byte[] decode(String msg){  //key==d
+        return (new BigInteger(msg.getBytes())).modPow(privateKey,N).toByteArray();
+    }
+
+
 
     public String getUsername(){
         return this.username;

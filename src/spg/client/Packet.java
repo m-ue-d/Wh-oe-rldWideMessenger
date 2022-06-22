@@ -39,7 +39,7 @@ public class Packet {
 
 
         for (ClientMain client:receivers) { //hashmap befüllen
-            String encodedThreadKey=RSA.encode(key,client.publicKey);
+            byte[] encodedThreadKey=  RSA.encode(key,client.publicKey, client.N);
         }
 
         //hex hex (insert zauber noises)
