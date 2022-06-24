@@ -4,7 +4,6 @@ import spg.server.Packet;
 
 import java.io.ObjectInputStream;
 import java.net.Socket;
-import java.util.Arrays;
 
 public class SocketReader extends Thread {
     private ObjectInputStream reader;
