@@ -1,39 +1,37 @@
 package spg.client;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import spg.server.Packet;
+
+import java.io.ObjectInputStream;
 import java.net.Socket;
+import java.util.Arrays;
 
 public class SocketReader extends Thread {
-    private BufferedReader reader;
+    private ObjectInputStream reader;
     private Socket socket;
-    private ClientMain client;
+    private Client client;
 
-    public SocketReader(Socket socket, ClientMain client) {
+    public SocketReader(Socket socket, Client client) {
         this.socket = socket;
         this.client = client;
-
-        try {
-            this.reader = new BufferedReader(
-                new InputStreamReader(
-                    socket.getInputStream()
-                )
-            );
-        } catch (Exception e) {
-            System.err.println("Error creating reader");
-        }
     }
 
     @Override
     public void run() {
+        try {
+            reader = new ObjectInputStream(
+                socket.getInputStream()
+            );
+        } catch (Exception e) {
+            System.err.println("Error creating object input stream");
+        }
+
         while (true) {
             try {
-                String msg = reader.readLine();
-
-                System.out.println(msg);
+                Packet obj = (Packet) reader.readObject();
+                ClientNetwork.handlePacket(client, obj);
             } catch (Exception e) {
-                System.err.println("Error reading from server");
-                e.printStackTrace();
+                System.err.println("Error reading packet from server");
                 break;
             }
         }
