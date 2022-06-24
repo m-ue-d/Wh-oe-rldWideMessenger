@@ -3,6 +3,7 @@ package spg.server;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Arrays;
 
 public class PacketByteBuffer implements Serializable {
@@ -54,7 +55,7 @@ public class PacketByteBuffer implements Serializable {
     public static PacketByteBuffer test() {
         return new PacketByteBuffer.Builder()
             .writeMessage("Hello World!")
-            .writeTime(LocalDate().now());
+            .writeTime(LocalDate.now())
             .build();
     }
 }
