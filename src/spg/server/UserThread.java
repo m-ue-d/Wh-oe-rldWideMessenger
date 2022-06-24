@@ -6,11 +6,11 @@ import java.net.Socket;
 public class UserThread extends Thread {
 
     private Socket socket;
-    private ServerMain server;
-    private PrintWriter writer;
-    private BufferedReader reader;
+    private Server server;
+    private ObjectOutputStream writer;
+    private ObjectInputStream reader;
 
-    public UserThread(Socket socket, ServerMain serverMain) {
+    public UserThread(Socket socket, Server serverMain) {
         this.socket = socket;
         this.server = serverMain;
     }
@@ -18,24 +18,29 @@ public class UserThread extends Thread {
     @Override
     public void run() {
         try {
-            this.reader = new BufferedReader(new InputStreamReader(
+            this.reader = new ObjectInputStream(
                 socket.getInputStream()
-            ));
+            );
 
-            this.writer = new PrintWriter(
-                socket.getOutputStream(), true
+            this.writer = new ObjectOutputStream(
+                socket.getOutputStream()
             );
 
             while (true) {
-                String msg = reader.readLine();
-                server.broadcast(msg);
+                Packet packet = (Packet) reader.readObject();
+                server.broadcast(packet);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Error broadcasting packet");
         }
     }
 
-    public void send(String msg) {
-        writer.println(msg);
+    public void send(Packet packet) {
+        try {
+            writer.writeObject(packet);
+        } catch (IOException e) {
+            System.err.println("Error sending packet to client," +
+                " the client may have disconnected");
+        }
     }
 }
