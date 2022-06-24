@@ -18,6 +18,7 @@ public class SocketWriter extends Thread {
         this.client = client;
     }
 
+
     @Override
     public void run() {
         try  {
