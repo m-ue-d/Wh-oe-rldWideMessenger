@@ -1,4 +1,4 @@
-package spg.client;
+package spg.client.control;
 
 import java.net.Socket;
 

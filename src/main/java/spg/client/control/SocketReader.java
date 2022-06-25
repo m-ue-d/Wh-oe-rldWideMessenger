@@ -1,4 +1,4 @@
-package spg.client;
+package spg.client.control;
 
 import spg.server.Packet;
 

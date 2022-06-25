@@ -1,19 +1,15 @@
-package spg.client;
+package spg.client.control;
 
+import javafx.scene.image.Image;
+import spg.client.model.User;
 import spg.server.Packet;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ClientNetwork {
-	public static class PacketRegistryEntry {
-		public final String identifier;
-		public final PacketReceiveHandler handler;
+	public record PacketRegistryEntry(String identifier, PacketReceiveHandler handler) {
 
-		public PacketRegistryEntry(String identifier, PacketReceiveHandler handler) {
-			this.identifier = identifier;
-			this.handler = handler;
-		}
 	}
 
 	public interface PacketReceiveHandler {
@@ -43,5 +39,11 @@ public class ClientNetwork {
 				new String(data)
 			);
 		});
+	}
+
+	public static User getUser(int id) {
+		return new User(
+			"Heinrich", new Image("/spg/client/images/Heinrich.jpg")
+		);
 	}
 }
