@@ -48,5 +48,7 @@ public class SocketWriter extends Thread {
 				break;
 			}
 		}
+		
+		scanner.close();
 	}
 }

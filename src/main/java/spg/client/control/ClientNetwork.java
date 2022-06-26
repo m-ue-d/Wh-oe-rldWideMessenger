@@ -43,7 +43,7 @@ public class ClientNetwork {
 
 	public static User getUser(int id) {
 		return new User(
-			"Heinrich", new Image("/spg/client/images/Heinrich.jpg")
+			"Heinz", new Image("/spg/client/images/Heinz.jpg")
 		);
 	}
 }
