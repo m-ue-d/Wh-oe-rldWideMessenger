@@ -1,0 +1,2 @@
+Current: current settings that change during the runtime, e.g. the current visiting server + channel id
+Settings: settings that are applied once during startup through config files, e.g. account credentials / theme

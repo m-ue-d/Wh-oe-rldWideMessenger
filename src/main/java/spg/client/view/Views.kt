@@ -1,16 +1,13 @@
 package spg.client.view
 
-import javafx.animation.FadeTransition
-import javafx.animation.Interpolator
-import javafx.animation.RotateTransition
-import javafx.animation.ScaleTransition
+import javafx.animation.*
 import javafx.beans.property.SimpleBooleanProperty
+import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.control.Label
-import javafx.scene.control.ToggleGroup
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.layout.*
@@ -21,26 +18,68 @@ import javafx.scene.text.Font
 import javafx.util.Duration
 import spg.client.App
 import spg.client.control.ClientNetwork
+import spg.client.model.Current
 import spg.client.model.Settings
-import spg.client.view.utility.FlexExpander
-import spg.client.view.utility.FlexSpacer
-import java.lang.Math.pow
+import spg.client.view.utility.*
 import java.nio.file.Path
-import java.time.LocalDate
-import java.util.Random
+import java.util.*
 import kotlin.io.path.extension
 import kotlin.io.path.name
-import kotlin.math.pow
 
 class MainView : BorderPane() {
+	companion object {
+		private lateinit var centerViewNode: StackPane
+		lateinit var usersViewNode: UsersView
+
+		fun setCurrentView(view: Node) {
+			if (!centerViewNode.children.contains(view)) {
+				centerViewNode.children.add(
+					view.apply {
+						ScaleTransition().apply {
+							this.node = view
+							this.duration = Duration.seconds(0.5)
+							this.fromX = 0.8
+							this.fromY = 0.8
+							this.toX = 1.0
+							this.toY = 1.0
+							this.interpolator = Interpolators.easeInOutBack
+						}.play()
+						FadeTransition().apply {
+							this.node = view
+							this.duration = Duration.seconds(0.5)
+							this.fromValue = 0.0
+							this.toValue = 1.0
+							this.interpolator = Interpolator.EASE_BOTH
+						}.play()
+						PauseTransition().apply {
+							this.duration = Duration.seconds(0.5)
+							this.onFinished = EventHandler {
+								centerViewNode.children.removeIf {
+									centerViewNode.children.size > 1
+								}
+							}
+						}.play()
+					}
+				)
+			}
+		}
+	}
 	init {
 //		this.bottom = StatusBar()
 		this.center = BorderPane().apply {
-			this.center = ChatView()
+			this.center = StackPane(
+				// current view
+			).apply {
+				centerViewNode = this
+				this.padding = Insets(0.0, 20.0, 20.0, 0.0)
+				setCurrentView(ChatView())
+			}
 			this.top = MenubarView()
 		}
 		this.left = SidebarView()
-		this.right = UsersView()
+		this.right = UsersView().apply {
+			usersViewNode = this
+		}
 
 		this.background = Background(
 			BackgroundFill(
@@ -54,88 +93,105 @@ class MainView : BorderPane() {
 }
 
 class UsersView : BorderPane() {
+	private val panelWidth: Double = 200.0
+
 	init {
-		this.prefWidth = 200.0
+		this.prefWidth = panelWidth
 		this.background = Background(
 			BackgroundFill(
 				Settings.bgSecondary.value,
-//				CornerRadii(0.0, 20.0, 20.0, 0.0, false),
 				CornerRadii.EMPTY,
 				Insets.EMPTY
 			)
 		)
 	}
+
+	fun hide() {
+		FadeTransition()
+		AnyTransition {
+			this.prefWidth = it
+		}.apply {
+			this.duration = Duration.seconds(0.5)
+			this.from = this@UsersView.width
+			this.to = 0.0
+			this.interpolator = Interpolators.easeInOutBack
+		}.play()
+	}
+
+	fun show() {
+		FadeTransition()
+		AnyTransition {
+			this.prefWidth = it
+		}.apply {
+			this.duration = Duration.seconds(0.5)
+			this.from = this@UsersView.width
+			this.to = panelWidth
+			this.interpolator = Interpolators.easeInOutBack
+		}.play()
+	}
 }
 
 class MenubarView : HBox() {
-	private var xOffset: Double = 0.0
-	private var yOffset: Double = 0.0
 	init {
-//		this.onMousePressed = EventHandler {
-//			xOffset = it.sceneX
-//			yOffset = it.sceneY
-//		}
-//
-//		this.onMouseDragged = EventHandler {
-//			this.scene.window.x = it.screenX - xOffset
-//			this.scene.window.y = it.screenY - yOffset
-//		}
-
-		this.border = Border(
-			BorderStroke(
-				Color.TRANSPARENT,
-				Color.TRANSPARENT,
-				Settings.bgSecondary.value,
-				Color.TRANSPARENT,
-				BorderStrokeStyle.NONE,
-				BorderStrokeStyle.NONE,
-				BorderStrokeStyle.SOLID,
-				BorderStrokeStyle.NONE,
-				CornerRadii.EMPTY,
-				BorderWidths(2.0),
-				Insets(0.0, 60.0, 0.0, 60.0)
-			)
-		)
-
-		this.padding = Insets(10.0, 60.0, 10.0, 60.0)
+		this.padding = Insets(10.0, 20.0, 10.0, 20.0)
 		this.spacing = 40.0
 		this.prefHeight = 60.0
-		this.alignment = Pos.CENTER_LEFT
+		this.alignment = Pos.CENTER_RIGHT
 		this.children.addAll(
+			HBox(
+				FontManager.bold("", 24.0).apply {
+					this.textProperty().bind(Current.panel)
+				},
+				// search bar
+			).apply {
+				this.alignment = Pos.CENTER
+				this.spacing = 10.0
+			},
 
+			FlexExpander(
+				hBox = true
+			),
+
+			HBox(
+				Circle(15.0).apply {
+					BorderPane.setAlignment(this, Pos.TOP_CENTER)
+					this.fill = ImagePattern(
+						Image("spg/client/images/Heinz.jpg")
+					)
+				},
+				FontManager.regular("Heinz"),
+				BorderPane(
+					ImageView(
+						Image("spg/client/images/misc/expand.png")
+					).apply {
+						this.opacity = 0.5
+						this.fitWidth = 20.0
+						this.fitHeight = 20.0
+					},
+				)
+			).apply {
+				this.alignment = Pos.CENTER
+				this.spacing = 10.0
+			}
 		)
 	}
 }
 
 class SidebarView : VBox() {
-	val toggleGroup = ToggleGroup()
+	private val toggleGroup = ToggleGroup()
 	init {
-		this.border = Border(
-			BorderStroke(
-				Color.TRANSPARENT,
-				Settings.bgSecondary.value,
-				Color.TRANSPARENT,
-				Color.TRANSPARENT,
-				BorderStrokeStyle.NONE,
-				BorderStrokeStyle.SOLID,
-				BorderStrokeStyle.NONE,
-				BorderStrokeStyle.NONE,
-				CornerRadii.EMPTY,
-				BorderWidths(2.0),
-				Insets.EMPTY
-			)
-		)
-
-		this.padding = Insets(10.0, 0.0, 10.0, 0.0)
-		this.spacing = 40.0
+		this.padding = Insets(20.0, 0.0, 10.0, 0.0)
+		this.spacing = 20.0
 		this.prefWidth = 50.0
 		this.alignment = Pos.TOP_CENTER
 		this.children.addAll(
-			ImageView(
-				Image("/spg/client/images/logo/messenger.png")
-			).apply {
-				this.fitWidth = 15.0
-				this.fitHeight = 15.0
+			SidebarButton(
+				Image("/spg/client/images/logo/messenger.png"), BorderPane(), toggleGroup
+			) {
+				MainView.usersViewNode.hide()
+				Current.panel.set(Settings.title.get())
+			}.apply {
+				this.active.set(true)
 			},
 
 			FlexSpacer(
@@ -143,22 +199,40 @@ class SidebarView : VBox() {
 			),
 
 			SidebarButton(
-				Image("/spg/client/images/menu/settings.png"), BorderPane(), toggleGroup
-			),
+				Image("/spg/client/images/menu/settings.png"), SettingsView(), toggleGroup
+			) {
+				MainView.usersViewNode.hide()
+				Current.panel.set("Settings")
+			},
 			SidebarButton(
 				Image("/spg/client/images/menu/explore.png"), BorderPane(), toggleGroup
-			),
+			) {
+				MainView.usersViewNode.show()
+				Current.panel.set("Discover")
+			},
 			SidebarButton(
 				Image("/spg/client/images/menu/messages.png"), BorderPane(), toggleGroup
-			).apply {
-				this.active.set(true)
+			) {
+				MainView.usersViewNode.show()
+				Current.panel.set("Direct Messages")
+			},
+			SidebarButton(
+				Image("/spg/client/images/menu/servers.png"), ChatView(), toggleGroup
+			) {
+				MainView.usersViewNode.show()
+				Current.panel.set("Servers")
 			},
 
-			FlexExpander(vBox = true),
+			FlexExpander(
+				vBox = true
+			),
 
 			SidebarButton(
 				Image("/spg/client/images/menu/addfriend.png"), BorderPane(), toggleGroup
-			),
+			) {
+				MainView.usersViewNode.hide()
+				Current.panel.set("Friends")
+			},
 		)
 	}
 
@@ -178,24 +252,17 @@ class SidebarView : VBox() {
 		}
 	}
 
-	class SidebarButton(img: Image, private val content: Node, private val toggleGroup : ToggleGroup?) : BorderPane() {
+	class SidebarButton(
+		private val img: Image,
+		private val content: Node,
+		private val toggleGroup : ToggleGroup? = null,
+		private val onAction: EventHandler<ActionEvent>? = null
+	) : BorderPane() {
 		val active: SimpleBooleanProperty = SimpleBooleanProperty(false)
-		private val easeInOutBack = object : Interpolator() {
-			override fun curve(t : Double) : Double {
-				val c1 = 1.70158
-				val c2 = c1 * 1.525
-
-				return if (t < 0.5) {
-					(2 * t).pow(2) * ((c2 + 1) * 2 * t - c2) / 2
-				} else {
-					(2 * t - 2).pow(2) * ((c2 + 1) * (t * 2 - 2) + c2) + 2
-				} / 2
-			}
-		}
 
 		init {
 			toggleGroup?.add(this)
-			this.padding = Insets(5.0)
+			this.prefHeight = 50.0
 			this.center = ImageView(img).apply {
 				this.fitWidth = 15.0
 				this.fitHeight = 15.0
@@ -209,21 +276,21 @@ class SidebarView : VBox() {
 						this.fromValue = 0.5
 						this.toValue = 1.0
 						this.duration = Duration.seconds(0.4)
-						this.interpolator = easeInOutBack
+						this.interpolator = Interpolators.easeInOutBack
 					}.play()
 					this@SidebarButton.border = Border(
 						BorderStroke(
 							Color.TRANSPARENT,
-							Color.web("#0074f1"),
 							Color.TRANSPARENT,
 							Color.TRANSPARENT,
+							Settings.colorAccent.value,
+							BorderStrokeStyle.NONE,
+							BorderStrokeStyle.NONE,
 							BorderStrokeStyle.NONE,
 							BorderStrokeStyle.SOLID,
-							BorderStrokeStyle.NONE,
-							BorderStrokeStyle.NONE,
 							CornerRadii.EMPTY,
-							BorderWidths(2.0),
-							Insets.EMPTY
+							BorderWidths(4.0),
+							Insets.EMPTY,
 						)
 					)
 				} else {
@@ -232,7 +299,7 @@ class SidebarView : VBox() {
 						this.fromValue = 1.0
 						this.toValue = 0.5
 						this.duration = Duration.seconds(0.4)
-						this.interpolator = easeInOutBack
+						this.interpolator = Interpolators.easeInOutBack
 					}.play()
 					this@SidebarButton.border = null
 				}
@@ -246,7 +313,7 @@ class SidebarView : VBox() {
 					this.toX = 1.3
 					this.toY = 1.3
 					this.duration = Duration.seconds(0.5)
-					this.interpolator = easeInOutBack
+					this.interpolator = Interpolators.easeInOutBack
 				}.play()
 				RotateTransition().apply {
 					this.node = center
@@ -263,7 +330,7 @@ class SidebarView : VBox() {
 					this.toX = 1.0
 					this.toY = 1.0
 					this.duration = Duration.seconds(0.5)
-					this.interpolator = easeInOutBack
+					this.interpolator = Interpolators.easeInOutBack
 				}.play()
 				RotateTransition().apply {
 					this.node = center
@@ -273,6 +340,12 @@ class SidebarView : VBox() {
 				}.play()
 			}
 			this.onMousePressed = EventHandler {
+				if (!active.value) {
+					MainView.setCurrentView(content)
+					onAction?.handle(ActionEvent(
+						this@SidebarButton, null
+					))
+				}
 				active.set(true)
 				toggleGroup?.toggle(this@SidebarButton)
 				ScaleTransition().apply {
@@ -282,7 +355,7 @@ class SidebarView : VBox() {
 					this.toX = 1.0
 					this.toY = 1.0
 					this.duration = Duration.seconds(0.5)
-					this.interpolator = easeInOutBack
+					this.interpolator = Interpolators.easeInOutBack
 				}.play()
 			}
 			this.onMouseReleased = EventHandler {
@@ -293,21 +366,45 @@ class SidebarView : VBox() {
 					this.toX = 1.3
 					this.toY = 1.3
 					this.duration = Duration.seconds(0.5)
-					this.interpolator = easeInOutBack
+					this.interpolator = Interpolators.easeInOutBack
 				}.play()
 			}
 		}
 	}
 }
 
+class SettingsView : BorderPane() {
+	init {
+		this.center = SettingsPane()
+		this.background = Background(
+			BackgroundFill(
+				Settings.bgSecondary.value,
+				CornerRadii(10.0),
+				Insets.EMPTY
+			)
+		)
+	}
+
+	class SettingsPane : VBox() {
+
+	}
+}
+
 class ChatView : BorderPane() {
 	init {
 		this.center = ChatPane()
+		this.background = Background(
+			BackgroundFill(
+				Settings.bgSecondary.value,
+				CornerRadii(10.0),
+				Insets.EMPTY
+			)
+		)
 	}
 
 	class ChatPane : VBox() {
 		init {
-			this.padding = Insets(0.0, 60.0, 0.0, 60.0)
+			this.padding = Insets(0.0, 10.0, 0.0, 10.0)
 			addSpacing()
 			addMessage(0, "Servus!")
 		}
@@ -322,13 +419,7 @@ class ChatView : BorderPane() {
 
 		fun addMessage(userID: Int, message: String) {
 			this.children.add(
-				ChatItem(userID, Label(message).apply {
-					this.textFill = Settings.fontMain.value
-					this.font = Font.loadFont(
-						App::class.java.getResourceAsStream(
-							"font/inter.ttf"
-						), 14.0
-					)
+				ChatItem(userID, FontManager.regular(message).apply {
 					this.isWrapText = true
 				})
 			)
@@ -417,17 +508,10 @@ class ChatView : BorderPane() {
 			}
 
 			this.center = VBox(
-				Label(user.username).apply {
-					this.textFill = Settings.fontMain.value
-					this.font = Font.loadFont(
-						App::class.java.getResourceAsStream(
-							"font/inter.ttf"
-						), 14.0
-					)
+				FontManager.regular(user.username).apply {
 					this.isWrapText = false
 					this.prefHeight = 30.0
-				},
-				element
+				},  element
 			).apply {
 				this.padding = Insets(0.0, 0.0, 0.0, 15.0)
 			}
