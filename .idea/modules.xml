@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/WhörldWideMessenger.iml" filepath="$PROJECT_DIR$/WhörldWideMessenger.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Wh-oe-rldWideMessenger.iml" filepath="$PROJECT_DIR$/.idea/Wh-oe-rldWideMessenger.iml" />
     </modules>
   </component>
 </project>
