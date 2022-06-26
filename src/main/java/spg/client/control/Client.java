@@ -8,7 +8,7 @@ public class Client {
 
 	public static void main(String[] args) {
 		ClientNetwork.initialize();
-//        new Client("192.164.135.65", 6666).start();
+		// new Client("192.164.135.65", 6666).start();
 		new Client("localhost", 8080).start();
 	}
 
