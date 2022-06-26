@@ -7,6 +7,7 @@ import javafx.event.EventHandler
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.Node
+import javafx.scene.control.Hyperlink
 import javafx.scene.control.Label
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
@@ -21,6 +22,8 @@ import spg.client.control.ClientNetwork
 import spg.client.model.Current
 import spg.client.model.Settings
 import spg.client.view.utility.*
+import java.awt.Desktop
+import java.net.URI
 import java.nio.file.Path
 import java.util.*
 import kotlin.io.path.extension
@@ -186,10 +189,10 @@ class SidebarView : VBox() {
 		this.alignment = Pos.TOP_CENTER
 		this.children.addAll(
 			SidebarButton(
-				Image("/spg/client/images/logo/messenger.png"), BorderPane(), toggleGroup
+				Image("/spg/client/images/logo/messenger-hollow.png"), HomeView(), toggleGroup
 			) {
 				MainView.usersViewNode.hide()
-				Current.panel.set(Settings.title.get())
+				Current.panel.set("Welcome!")
 			}.apply {
 				this.active.set(true)
 			},
@@ -368,6 +371,95 @@ class SidebarView : VBox() {
 					this.duration = Duration.seconds(0.5)
 					this.interpolator = Interpolators.easeInOutBack
 				}.play()
+			}
+		}
+	}
+}
+
+class HomeView : BorderPane() {
+	init {
+		this.center = HomePane()
+		this.background = Background(
+			BackgroundFill(
+				Settings.bgSecondary.value,
+				CornerRadii(10.0),
+				Insets.EMPTY
+			)
+		)
+	}
+
+	class HomePane : HBox() {
+		init {
+			this.children.addAll(
+				VBox(
+					FontManager.bold("Whörld Wide Messenger", 30.0).apply {
+						this.opacity = 0.3
+					},
+					FlexSpacer(10.0, vBox = true),
+					FontManager.regular("The solution for the daily messenger.", 20.0).apply {
+						this.opacity = 0.3
+						this.isWrapText = true
+					},
+					FontManager.regular("Simple, clean and most importantly - intuitive.", 20.0).apply {
+						this.opacity = 0.3
+						this.isWrapText = true
+					},
+					FlexSpacer(10.0, vBox = true),
+					FontManager.regular("Support us on social media:", 20.0).apply {
+						this.opacity = 0.3
+						this.isWrapText = true
+					},
+					FlexSpacer(20.0, vBox = true),
+					HBox(
+						SocialLink("GitHub", Image(
+							"/spg/client/images/social/github.png",
+						), URI("https://github.com/m-ue-d/Wh-oe-rldWideMessenger")),
+
+						SocialLink("GitHub", Image(
+							"/spg/client/images/social/github.png",
+						), URI("https://github.com/m-ue-d/Wh-oe-rldWideMessenger")),
+
+						SocialLink("GitHub", Image(
+							"/spg/client/images/social/github.png",
+						), URI("https://github.com/m-ue-d/Wh-oe-rldWideMessenger"))
+					).apply {
+						this.alignment = Pos.CENTER_LEFT
+						this.spacing = 20.0
+					}
+				).apply {
+					this.spacing = 5.0
+					this.prefWidth = 400.0
+					this.alignment = Pos.CENTER_LEFT
+				},
+
+				ImageView(
+					Image("/spg/client/images/logo/messenger-white.png")
+				).apply {
+					this.opacity = 0.1
+					this.fitWidth = 200.0
+					this.fitHeight = 200.0
+				}
+			)
+
+			this.alignment = Pos.CENTER
+			this.spacing = 50.0
+		}
+	}
+
+	class SocialLink(private val name: String, private val img: Image, private val link: URI) : BorderPane() {
+		init {
+			this.center = ImageView(img).apply {
+				this.opacity = 0.3
+				this.fitWidth = 30.0
+				this.fitHeight = 30.0
+			}
+			this.bottom = FontManager.bold(name, 13.0).apply {
+				this.opacity = 0.3
+				this.isWrapText = true
+				this.padding = Insets(5.0)
+			}
+			this.onMouseClicked = EventHandler {
+				Desktop.getDesktop().browse(link)
 			}
 		}
 	}
