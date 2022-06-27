@@ -26,28 +26,12 @@ class App : Application() {
 
 		stage.title = "${Settings.title.get()} - ${Settings.QUOTE}"
 		stage.scene = Scene(MainView().apply {
-//			this.clip = Rectangle().apply {
-//				this.arcWidth = 20.0
-//				this.arcHeight = 20.0
-//				this.widthProperty().bind(
-//					stage.widthProperty()
-//				)
-//				this.heightProperty().bind(
-//					stage.heightProperty()
-//				)
-//			}
-//			this.border = Border(
-//				BorderStroke(
-//					Settings.bgSecondary.value,
-//					BorderStrokeStyle.SOLID,
-//					CornerRadii(20.0),
-//					BorderWidths(2.0)
-//				)
-//			)
 		}, 1000.0, 600.0).apply {
 			this.fill = Color.TRANSPARENT
+			this.stylesheets.add(
+				"spg/client/css/style.css"
+			)
 		}
-//		stage.initStyle(StageStyle.TRANSPARENT)
 		stage.show()
 	}
 }

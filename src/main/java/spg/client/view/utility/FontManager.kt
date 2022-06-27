@@ -7,25 +7,33 @@ import spg.client.model.Settings
 
 class FontManager {
 	companion object {
-		fun regular(text: String, size: Double = 14.0) : Label {
+		fun regularFont(size: Double = 14.0) : Font {
+			return Font.loadFont(
+				App::class.java.getResourceAsStream(
+					"font/inter-medium.ttf"
+				), size
+			)
+		}
+
+		fun regularLabel(text: String, size: Double = 14.0) : Label {
 			return Label(text).apply {
-				this.textFill = Settings.fontMain.value
-				this.font = Font.loadFont(
-					App::class.java.getResourceAsStream(
-						"font/inter-medium.ttf"
-					), size
-				)
+				this.textFillProperty().bind(Settings.fontMain)
+				this.font = regularFont(size)
 			}
 		}
 
-		fun bold(text: String, size: Double = 14.0) : Label {
+		fun boldFont(size: Double = 14.0) : Font {
+			return Font.loadFont(
+				App::class.java.getResourceAsStream(
+					"font/poppins-bold.ttf"
+				), size
+			)
+		}
+
+		fun boldLabel(text: String, size: Double = 14.0) : Label {
 			return Label(text).apply {
-				this.textFill = Settings.fontMain.value
-				this.font = Font.loadFont(
-					App::class.java.getResourceAsStream(
-						"font/poppins-bold.ttf"
-					), size
-				)
+				this.textFillProperty().bind(Settings.fontMain)
+				this.font = boldFont(size)
 			}
 		}
 	}

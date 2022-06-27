@@ -1,23 +1,27 @@
 package spg.client.view
 
 import javafx.animation.*
+import javafx.beans.binding.Bindings
+import javafx.beans.property.ObjectProperty
 import javafx.beans.property.SimpleBooleanProperty
-import javafx.event.ActionEvent
+import javafx.beans.property.SimpleDoubleProperty
 import javafx.event.EventHandler
 import javafx.geometry.Insets
+import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.scene.Node
-import javafx.scene.control.Hyperlink
 import javafx.scene.control.Label
+import javafx.scene.control.Separator
+import javafx.scene.control.TextField
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
+import javafx.scene.input.MouseEvent
 import javafx.scene.layout.*
 import javafx.scene.paint.Color
 import javafx.scene.paint.ImagePattern
 import javafx.scene.shape.Circle
-import javafx.scene.text.Font
 import javafx.util.Duration
-import spg.client.App
+import javafx.util.StringConverter
 import spg.client.control.ClientNetwork
 import spg.client.model.Current
 import spg.client.model.Settings
@@ -29,44 +33,8 @@ import java.util.*
 import kotlin.io.path.extension
 import kotlin.io.path.name
 
-class MainView : BorderPane() {
-	companion object {
-		private lateinit var centerViewNode: StackPane
-		lateinit var usersViewNode: UsersView
 
-		fun setCurrentView(view: Node) {
-			if (!centerViewNode.children.contains(view)) {
-				centerViewNode.children.add(
-					view.apply {
-						ScaleTransition().apply {
-							this.node = view
-							this.duration = Duration.seconds(0.5)
-							this.fromX = 0.8
-							this.fromY = 0.8
-							this.toX = 1.0
-							this.toY = 1.0
-							this.interpolator = Interpolators.easeInOutBack
-						}.play()
-						FadeTransition().apply {
-							this.node = view
-							this.duration = Duration.seconds(0.5)
-							this.fromValue = 0.0
-							this.toValue = 1.0
-							this.interpolator = Interpolator.EASE_BOTH
-						}.play()
-						PauseTransition().apply {
-							this.duration = Duration.seconds(0.5)
-							this.onFinished = EventHandler {
-								centerViewNode.children.removeIf {
-									centerViewNode.children.size > 1
-								}
-							}
-						}.play()
-					}
-				)
-			}
-		}
-	}
+class MainView : BorderPane() {
 	init {
 //		this.bottom = StatusBar()
 		this.center = BorderPane().apply {
@@ -75,7 +43,6 @@ class MainView : BorderPane() {
 			).apply {
 				centerViewNode = this
 				this.padding = Insets(0.0, 20.0, 20.0, 0.0)
-				setCurrentView(ChatView())
 			}
 			this.top = MenubarView()
 		}
@@ -84,14 +51,63 @@ class MainView : BorderPane() {
 			usersViewNode = this
 		}
 
-		this.background = Background(
-			BackgroundFill(
-				Settings.bgMain.value,
-//				CornerRadii(20.0),
-				CornerRadii.EMPTY,
-				Insets.EMPTY
-			)
+		setCurrentView(HomeView())
+		usersViewNode.hide()
+		Current.panel.set("Welcome!")
+
+		this.backgroundProperty().bind(
+			Bindings.createObjectBinding({
+				Background(
+					BackgroundFill(
+						Settings.bgPrimary.value,
+						CornerRadii.EMPTY,
+						Insets.EMPTY
+					)
+				)
+			}, Settings.bgPrimary)
 		)
+	}
+
+	companion object {
+		private lateinit var centerViewNode: StackPane
+		lateinit var usersViewNode: UsersView
+
+		fun setCurrentView(view: Node) {
+			if (centerViewNode.children.contains(view)) {
+				centerViewNode.children.remove(view)
+			}
+
+			centerViewNode.children.add(
+				view.apply {
+					ScaleTransition().also {
+						it.node = this
+						it.duration = Duration.seconds(0.5)
+						it.fromX = 0.8
+						it.fromY = 0.8
+						it.toX = 1.0
+						it.toY = 1.0
+						it.interpolatorProperty().bind(
+							Settings.easeInOutBack
+						)
+					}.play()
+					FadeTransition().also {
+						it.node = this
+						it.duration = Duration.seconds(0.5)
+						it.fromValue = 0.0
+						it.toValue = 1.0
+						it.interpolator = Interpolator.EASE_BOTH
+					}.play()
+					PauseTransition().also {
+						it.duration = Duration.seconds(0.5)
+						it.onFinished = EventHandler {
+							centerViewNode.children.removeIf { node ->
+								node != centerViewNode.children.last()
+							}
+						}
+					}.play()
+				}
+			)
+		}
 	}
 }
 
@@ -100,12 +116,16 @@ class UsersView : BorderPane() {
 
 	init {
 		this.prefWidth = panelWidth
-		this.background = Background(
-			BackgroundFill(
-				Settings.bgSecondary.value,
-				CornerRadii.EMPTY,
-				Insets.EMPTY
-			)
+		this.backgroundProperty().bind(
+			Bindings.createObjectBinding({
+				Background(
+					BackgroundFill(
+						Settings.bgSecondary.value,
+						CornerRadii.EMPTY,
+						Insets.EMPTY
+					)
+				)
+			}, Settings.bgSecondary)
 		)
 	}
 
@@ -117,7 +137,9 @@ class UsersView : BorderPane() {
 			this.duration = Duration.seconds(0.5)
 			this.from = this@UsersView.width
 			this.to = 0.0
-			this.interpolator = Interpolators.easeInOutBack
+			this.interpolatorProperty().bind(
+				Settings.easeInOutBack
+			)
 		}.play()
 	}
 
@@ -129,7 +151,9 @@ class UsersView : BorderPane() {
 			this.duration = Duration.seconds(0.5)
 			this.from = this@UsersView.width
 			this.to = panelWidth
-			this.interpolator = Interpolators.easeInOutBack
+			this.interpolatorProperty().bind(
+				Settings.easeInOutBack
+			)
 		}.play()
 	}
 }
@@ -142,7 +166,7 @@ class MenubarView : HBox() {
 		this.alignment = Pos.CENTER_RIGHT
 		this.children.addAll(
 			HBox(
-				FontManager.bold("", 24.0).apply {
+				FontManager.boldLabel("", 24.0).apply {
 					this.textProperty().bind(Current.panel)
 				},
 				// search bar
@@ -162,7 +186,7 @@ class MenubarView : HBox() {
 						Image("spg/client/images/Heinz.jpg")
 					)
 				},
-				FontManager.regular("Heinz"),
+				FontManager.regularLabel("Heinz"),
 				BorderPane(
 					ImageView(
 						Image("spg/client/images/misc/expand.png")
@@ -183,7 +207,7 @@ class MenubarView : HBox() {
 class SidebarView : VBox() {
 	private val toggleGroup = ToggleGroup()
 	init {
-		this.padding = Insets(20.0, 0.0, 10.0, 0.0)
+		this.padding = Insets(10.0, 0.0, 20.0, 0.0)
 		this.spacing = 20.0
 		this.prefWidth = 50.0
 		this.alignment = Pos.TOP_CENTER
@@ -198,7 +222,7 @@ class SidebarView : VBox() {
 			},
 
 			FlexSpacer(
-				15.0, vBox = true
+				20.0, vBox = true
 			),
 
 			SidebarButton(
@@ -210,7 +234,7 @@ class SidebarView : VBox() {
 			SidebarButton(
 				Image("/spg/client/images/menu/explore.png"), BorderPane(), toggleGroup
 			) {
-				MainView.usersViewNode.show()
+				MainView.usersViewNode.hide()
 				Current.panel.set("Discover")
 			},
 			SidebarButton(
@@ -259,13 +283,13 @@ class SidebarView : VBox() {
 		private val img: Image,
 		private val content: Node,
 		private val toggleGroup : ToggleGroup? = null,
-		private val onAction: EventHandler<ActionEvent>? = null
+		private val onAction: EventHandler<MouseEvent>? = null
 	) : BorderPane() {
 		val active: SimpleBooleanProperty = SimpleBooleanProperty(false)
 
 		init {
 			toggleGroup?.add(this)
-			this.prefHeight = 50.0
+			this.prefHeight = 40.0
 			this.center = ImageView(img).apply {
 				this.fitWidth = 15.0
 				this.fitHeight = 15.0
@@ -279,7 +303,9 @@ class SidebarView : VBox() {
 						this.fromValue = 0.5
 						this.toValue = 1.0
 						this.duration = Duration.seconds(0.4)
-						this.interpolator = Interpolators.easeInOutBack
+						this.interpolatorProperty().bind(
+							Settings.easeInOutBack
+						)
 					}.play()
 					this@SidebarButton.border = Border(
 						BorderStroke(
@@ -302,7 +328,9 @@ class SidebarView : VBox() {
 						this.fromValue = 1.0
 						this.toValue = 0.5
 						this.duration = Duration.seconds(0.4)
-						this.interpolator = Interpolators.easeInOutBack
+						this.interpolatorProperty().bind(
+							Settings.easeInOutBack
+						)
 					}.play()
 					this@SidebarButton.border = null
 				}
@@ -316,7 +344,9 @@ class SidebarView : VBox() {
 					this.toX = 1.3
 					this.toY = 1.3
 					this.duration = Duration.seconds(0.5)
-					this.interpolator = Interpolators.easeInOutBack
+					this.interpolatorProperty().bind(
+						Settings.easeInOutBack
+					)
 				}.play()
 				RotateTransition().apply {
 					this.node = center
@@ -333,7 +363,9 @@ class SidebarView : VBox() {
 					this.toX = 1.0
 					this.toY = 1.0
 					this.duration = Duration.seconds(0.5)
-					this.interpolator = Interpolators.easeInOutBack
+					this.interpolatorProperty().bind(
+						Settings.easeInOutBack
+					)
 				}.play()
 				RotateTransition().apply {
 					this.node = center
@@ -345,9 +377,7 @@ class SidebarView : VBox() {
 			this.onMousePressed = EventHandler {
 				if (!active.value) {
 					MainView.setCurrentView(content)
-					onAction?.handle(ActionEvent(
-						this@SidebarButton, null
-					))
+					onAction?.handle(it)
 				}
 				active.set(true)
 				toggleGroup?.toggle(this@SidebarButton)
@@ -358,7 +388,9 @@ class SidebarView : VBox() {
 					this.toX = 1.0
 					this.toY = 1.0
 					this.duration = Duration.seconds(0.5)
-					this.interpolator = Interpolators.easeInOutBack
+					this.interpolatorProperty().bind(
+						Settings.easeInOutBack
+					)
 				}.play()
 			}
 			this.onMouseReleased = EventHandler {
@@ -369,7 +401,9 @@ class SidebarView : VBox() {
 					this.toX = 1.3
 					this.toY = 1.3
 					this.duration = Duration.seconds(0.5)
-					this.interpolator = Interpolators.easeInOutBack
+					this.interpolatorProperty().bind(
+						Settings.easeInOutBack
+					)
 				}.play()
 			}
 		}
@@ -379,34 +413,37 @@ class SidebarView : VBox() {
 class HomeView : BorderPane() {
 	init {
 		this.center = HomePane()
-		this.background = Background(
-			BackgroundFill(
-				Settings.bgSecondary.value,
-				CornerRadii(10.0),
-				Insets.EMPTY
-			)
+		this.backgroundProperty().bind(
+			Bindings.createObjectBinding({
+				Background(
+					BackgroundFill(
+						Settings.bgSecondary.value,
+						CornerRadii(10.0),
+						Insets.EMPTY
+					)
+				)
+			}, Settings.bgSecondary)
 		)
 	}
 
 	class HomePane : HBox() {
 		init {
+			this.opacity = 0.3
 			this.children.addAll(
 				VBox(
-					FontManager.bold("Whörld Wide Messenger", 30.0).apply {
-						this.opacity = 0.3
-					},
+					FontManager.boldLabel("Whörld Wide Messenger", 30.0),
 					FlexSpacer(10.0, vBox = true),
-					FontManager.regular("The solution for the daily messenger.", 20.0).apply {
-						this.opacity = 0.3
+					FontManager.regularLabel("The solution for your daily messenger.", 20.0).apply {
 						this.isWrapText = true
 					},
-					FontManager.regular("Simple, clean and most importantly - intuitive.", 20.0).apply {
-						this.opacity = 0.3
+					FontManager.regularLabel("Simple, clean, and intuitive.", 20.0).apply {
+						this.isWrapText = true
+					},
+					FontManager.regularLabel("Open Source with end-to-end encryption.", 20.0).apply {
 						this.isWrapText = true
 					},
 					FlexSpacer(10.0, vBox = true),
-					FontManager.regular("Support us on social media:", 20.0).apply {
-						this.opacity = 0.3
+					FontManager.regularLabel("Support us on social media:", 20.0).apply {
 						this.isWrapText = true
 					},
 					FlexSpacer(20.0, vBox = true),
@@ -427,7 +464,7 @@ class HomeView : BorderPane() {
 						this.spacing = 20.0
 					}
 				).apply {
-					this.spacing = 5.0
+					this.spacing = 10.0
 					this.prefWidth = 400.0
 					this.alignment = Pos.CENTER_LEFT
 				},
@@ -435,7 +472,7 @@ class HomeView : BorderPane() {
 				ImageView(
 					Image("/spg/client/images/logo/messenger-white.png")
 				).apply {
-					this.opacity = 0.1
+					this.opacity = 0.4
 					this.fitWidth = 200.0
 					this.fitHeight = 200.0
 				}
@@ -449,12 +486,10 @@ class HomeView : BorderPane() {
 	class SocialLink(private val name: String, private val img: Image, private val link: URI) : BorderPane() {
 		init {
 			this.center = ImageView(img).apply {
-				this.opacity = 0.3
 				this.fitWidth = 30.0
 				this.fitHeight = 30.0
 			}
-			this.bottom = FontManager.bold(name, 13.0).apply {
-				this.opacity = 0.3
+			this.bottom = FontManager.boldLabel(name, 13.0).apply {
 				this.isWrapText = true
 				this.padding = Insets(5.0)
 			}
@@ -467,37 +502,219 @@ class HomeView : BorderPane() {
 
 class SettingsView : BorderPane() {
 	init {
+		this.padding = Insets(10.0)
 		this.center = SettingsPane()
-		this.background = Background(
-			BackgroundFill(
-				Settings.bgSecondary.value,
-				CornerRadii(10.0),
-				Insets.EMPTY
-			)
+		this.backgroundProperty().bind(
+			Bindings.createObjectBinding({
+				Background(
+					BackgroundFill(
+						Settings.bgSecondary.value,
+						CornerRadii(10.0),
+						Insets.EMPTY
+					)
+				)
+			}, Settings.bgSecondary)
 		)
 	}
 
-	class SettingsPane : VBox() {
+	class SettingsPane : VBox(
+		SettingsGroup("Appearance"),
+		SettingsItem(
+			"Primary Color",
+			"The primary color of the application. It is the darkest color of all.",
+			SettingsItem.ColorField(Settings.bgPrimary)
+		),
+		SettingsItem(
+			"Secondary Color",
+			"A slightly lighter variant of the primary color. Used for elevated elements.",
+			SettingsItem.ColorField(Settings.bgSecondary)
+		),
+		SettingsItem(
+			"Tertiary Color",
+			"The lightest color in the application. Used for backgrounds and light fonts.",
+			SettingsItem.ColorField(Settings.bgTertiary)
+		),
+		SettingsItem(
+			"Accent Color",
+			"A colorful alternative to the other colors. Mainly used for tab indicators.",
+			SettingsItem.ColorField(Settings.colorAccent)
+		),
+		SettingsItem(
+			"Font Color",
+			"The main color of the application's font. Usually set to a color near white.",
+			SettingsItem.ColorField(Settings.fontMain)
+		),
+	) {
+		init {
+			this.spacing = 10.0
+		}
+	}
 
+	class SettingsGroup(private val title: String) : HBox() {
+		init {
+			this.alignment = Pos.CENTER
+			this.padding = Insets(20.0)
+			this.spacing = 10.0
+			this.children.addAll(
+				Separator(Orientation.HORIZONTAL).apply {
+					this.backgroundProperty().bind(
+						Bindings.createObjectBinding({
+							return@createObjectBinding Background.fill(
+								Settings.bgTertiary.value
+							)
+						}, Settings.bgTertiary)
+					)
+					HBox.setHgrow(this, Priority.ALWAYS)
+				},
+				FontManager.boldLabel(title, 16.0).apply {
+					this.textFillProperty().bind(
+						Settings.bgTertiary
+					)
+				},
+				Separator(Orientation.HORIZONTAL).apply {
+					this.backgroundProperty().bind(
+						Bindings.createObjectBinding({
+							return@createObjectBinding Background.fill(
+								Settings.bgTertiary.value
+							)
+						}, Settings.bgTertiary)
+					)
+					HBox.setHgrow(this, Priority.ALWAYS)
+				}
+			)
+		}
+	}
+
+	class SettingsItem(private val title: String, private val description: String, private val setting: Region) : HBox() {
+		private val hoverOpacity = SimpleDoubleProperty(0.0)
+		init {
+			this.alignment = Pos.CENTER
+			this.padding = Insets(10.0, 20.0, 10.0, 20.0)
+			this.children.addAll(
+				VBox(
+					FontManager.boldLabel(title, 16.0).apply {
+						this.textFillProperty().bind(
+							Settings.fontMain
+						)
+					},
+					FontManager.regularLabel(description, 14.0).apply {
+						this.prefWidth = 300.0
+						this.isWrapText = true
+						this.textFillProperty().bind(
+							Settings.bgTertiary
+						)
+					}
+				).apply {
+					this.spacing = 10.0
+				},
+
+				FlexExpander(
+					hBox = true
+				),
+
+				setting.apply {
+					this.prefHeight = 40.0
+					this.border = null
+					this.backgroundProperty().bind(
+						Bindings.createObjectBinding({
+							return@createObjectBinding Background(
+								BackgroundFill(
+									Settings.bgPrimary.value,
+									CornerRadii(5.0),
+									Insets.EMPTY
+								)
+							)
+						}, Settings.bgPrimary)
+					)
+				}
+			)
+
+			this.backgroundProperty().bind(
+				Bindings.createObjectBinding({
+					return@createObjectBinding Background(
+						BackgroundFill(
+							Settings.bgTertiary.value.deriveColor(
+								0.0, 1.0, 1.0, hoverOpacity.value
+							),
+							CornerRadii(7.0),
+							Insets.EMPTY
+						)
+					)
+				}, Settings.bgTertiary, hoverOpacity)
+			)
+
+			this.onMouseEntered = EventHandler {
+				AnyTransition {
+					hoverOpacity.set(it)
+				}.apply {
+					this.from = hoverOpacity.value
+					this.to = 0.3
+					this.duration = Duration.seconds(0.3)
+					this.interpolator = Interpolator.EASE_OUT
+				}.play()
+			}
+
+			this.onMouseExited = EventHandler {
+				AnyTransition {
+					hoverOpacity.set(it)
+				}.apply {
+					this.from = hoverOpacity.value
+					this.to = 0.0
+					this.duration = Duration.seconds(0.3)
+					this.interpolator = Interpolator.EASE_OUT
+				}.play()
+			}
+		}
+
+		class ColorField(private val property: ObjectProperty<Color>) : TextField() {
+			init {
+				this.alignment = Pos.CENTER_LEFT
+				this.deselect()
+				this.font = FontManager.boldFont(16.0)
+				this.styleProperty().bind(
+					Bindings.createObjectBinding({
+						return@createObjectBinding "-fx-text-fill: ${ColorUtil.toHex(
+							Settings.bgPrimary.value.invert()
+						)};"
+					}, property)
+				)
+				Bindings.bindBidirectional(
+					this.textProperty(),
+					property,
+					object : StringConverter<Color>() {
+						override fun toString(obj : Color) : String {
+							return ColorUtil.toHex(obj)
+						}
+
+						override fun fromString(str : String) : Color {
+							return ColorUtil.toColor(str)
+						}
+					}
+				)
+			}
+		}
 	}
 }
 
 class ChatView : BorderPane() {
 	init {
 		this.center = ChatPane()
-		this.background = Background(
-			BackgroundFill(
-				Settings.bgSecondary.value,
-				CornerRadii(10.0),
-				Insets.EMPTY
-			)
+		this.backgroundProperty().bind(
+			Bindings.createObjectBinding({
+				Background(
+					BackgroundFill(
+						Settings.bgSecondary.value,
+						CornerRadii(10.0),
+						Insets.EMPTY
+					)
+				)
+			}, Settings.bgSecondary)
 		)
 	}
 
 	class ChatPane : VBox() {
 		init {
-			this.padding = Insets(0.0, 10.0, 0.0, 10.0)
-			addSpacing()
+			this.padding = Insets(10.0)
 			addMessage(0, "Servus!")
 		}
 
@@ -511,7 +728,7 @@ class ChatView : BorderPane() {
 
 		fun addMessage(userID: Int, message: String) {
 			this.children.add(
-				ChatItem(userID, FontManager.regular(message).apply {
+				ChatItem(userID, FontManager.regularLabel(message).apply {
 					this.isWrapText = true
 				})
 			)
@@ -600,7 +817,7 @@ class ChatView : BorderPane() {
 			}
 
 			this.center = VBox(
-				FontManager.regular(user.username).apply {
+				FontManager.boldLabel(user.username).apply {
 					this.isWrapText = false
 					this.prefHeight = 30.0
 				},  element
