@@ -2,6 +2,26 @@
     -fx-border-color: transparent;
 }
 
-.separator {
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
 
+.scroll-bar:vertical {
+    -fx-background-color:transparent;
+}
+
+.increment-button, .decrement-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-bar:vertical .track{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-radius: 0em;
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #61636a;
+    -fx-background-radius: 5em;
 }

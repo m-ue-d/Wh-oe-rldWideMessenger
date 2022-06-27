@@ -11,6 +11,7 @@ import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.control.Label
+import javafx.scene.control.ScrollPane
 import javafx.scene.control.Separator
 import javafx.scene.control.TextField
 import javafx.scene.image.Image
@@ -307,20 +308,24 @@ class SidebarView : VBox() {
 							Settings.easeInOutBack
 						)
 					}.play()
-					this@SidebarButton.border = Border(
-						BorderStroke(
-							Color.TRANSPARENT,
-							Color.TRANSPARENT,
-							Color.TRANSPARENT,
-							Settings.colorAccent.value,
-							BorderStrokeStyle.NONE,
-							BorderStrokeStyle.NONE,
-							BorderStrokeStyle.NONE,
-							BorderStrokeStyle.SOLID,
-							CornerRadii.EMPTY,
-							BorderWidths(4.0),
-							Insets.EMPTY,
-						)
+					this@SidebarButton.borderProperty().bind(
+						Bindings.createObjectBinding({
+							Border(
+								BorderStroke(
+									Color.TRANSPARENT,
+									Color.TRANSPARENT,
+									Color.TRANSPARENT,
+									Settings.colorAccent.value,
+									BorderStrokeStyle.NONE,
+									BorderStrokeStyle.NONE,
+									BorderStrokeStyle.NONE,
+									BorderStrokeStyle.SOLID,
+									CornerRadii.EMPTY,
+									BorderWidths(4.0),
+									Insets.EMPTY,
+								)
+							)
+						}, Settings.colorAccent)
 					)
 				} else {
 					FadeTransition().apply {
@@ -332,6 +337,7 @@ class SidebarView : VBox() {
 							Settings.easeInOutBack
 						)
 					}.play()
+					this@SidebarButton.borderProperty().unbind()
 					this@SidebarButton.border = null
 				}
 			}
@@ -503,7 +509,12 @@ class HomeView : BorderPane() {
 class SettingsView : BorderPane() {
 	init {
 		this.padding = Insets(10.0)
-		this.center = SettingsPane()
+		this.center = ScrollPane(
+			SettingsPane()
+		).apply {
+			this.isFitToWidth = true
+			this.background = Background.fill(Color.TRANSPARENT)
+		}
 		this.backgroundProperty().bind(
 			Bindings.createObjectBinding({
 				Background(
@@ -544,6 +555,7 @@ class SettingsView : BorderPane() {
 			"The main color of the application's font. Usually set to a color near white.",
 			SettingsItem.ColorField(Settings.fontMain)
 		),
+		SettingsGroup("Account"),
 	) {
 		init {
 			this.spacing = 10.0
