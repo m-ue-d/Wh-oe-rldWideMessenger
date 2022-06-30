@@ -41,9 +41,9 @@ public class PacketByteBuffer implements Serializable {
 	}
 
 	private final byte[] content;
-	private HashMap<String, byte[]> userKeys = new HashMap<String,byte[]>();	//befüllt mit den Namen der User(müssen daher vom server eindeutig verifiziert werden: sonst keine verbindung!   ----    und die dazu verschlüsselten versionen des threadkeys)
+	private final HashMap<String, byte[]> userKeys = new HashMap<>(); //befüllt mit den Namen der User(müssen daher vom server eindeutig verifiziert werden: sonst keine verbindung!   ----    und die dazu verschlüsselten versionen des threadkeys)
 
-	public PacketByteBuffer(byte[] content) {//solten auch die reciever im Konstruktor sein
+	public PacketByteBuffer(byte[] content) { //solten auch die reciever im Konstruktor sein
 
 		byte[] x= content;
 

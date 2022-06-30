@@ -1,4 +1,4 @@
-package spg.server.email
+package spg.server.auth
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -50,7 +50,7 @@ class Email {
 		fun sendMail(recipient: String, code: String) {
 			try {
 				MimeMessage(session).apply {
-					this.setFrom(InternetAddress(this@Companion.from))
+					this.setFrom(InternetAddress(Companion.from))
 					this.addRecipient(
 						Message.RecipientType.TO, InternetAddress(recipient)
 					)
