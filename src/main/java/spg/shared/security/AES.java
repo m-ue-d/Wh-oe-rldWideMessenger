@@ -1,4 +1,4 @@
-package spg.server;
+package spg.shared.security;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

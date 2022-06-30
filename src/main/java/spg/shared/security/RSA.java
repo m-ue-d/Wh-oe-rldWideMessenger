@@ -1,4 +1,4 @@
-package spg.server;
+package spg.shared.security;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

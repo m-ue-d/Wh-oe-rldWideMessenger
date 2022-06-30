@@ -1,4 +1,4 @@
-package spg.client.model;
+package spg.shared;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -12,7 +12,7 @@ public class User {
     public User(int id, String uname, LocalDateTime since) {
         this.id = id;
         this.uname = uname;
-        this.img = id + ".png";
+        this.img = "/spg/server/database/avatars/" + id + ".png";
         this.since = since;
     }
 

@@ -1,5 +1,6 @@
 package spg.server.database
 
+import spg.shared.User
 import java.nio.file.Files
 import java.nio.file.Path
 import java.sql.Connection
@@ -67,6 +68,30 @@ class Database {
 				}
 			} catch (_ : SQLException) { }
 			return false
+		}
+
+		/**
+		 * Gets a user from the database.
+		 * @param id The unique user identifier.
+		 */
+		fun getEntry(id: Int) : User? {
+			try {
+				db.prepareStatement("SELECT id, uname, since FROM acc WHERE id = ?").apply {
+					this.setInt(1, id)
+				}.executeQuery().use {
+					it.next()
+					return User(
+						it.getInt("id"),
+						it.getString("uname"),
+						LocalDateTime.parse(
+							it.getString("since"),
+							DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+						)
+					)
+				}
+			} catch (_ : SQLException) {
+				return null
+			}
 		}
 	}
 }
