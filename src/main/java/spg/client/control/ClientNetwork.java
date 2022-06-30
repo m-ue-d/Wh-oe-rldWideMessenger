@@ -4,6 +4,7 @@ import javafx.scene.image.Image;
 import spg.client.model.User;
 import spg.server.Packet;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class ClientNetwork {
 
 	public static User getUser(int id) {
 		return new User(
-			"Heinz", new Image("/spg/client/images/Heinz.jpg")
+			0, "Heinz", LocalDateTime.now()
 		);
 	}
 }

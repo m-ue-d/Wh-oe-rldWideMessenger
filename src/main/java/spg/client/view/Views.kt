@@ -552,7 +552,7 @@ class SettingsView : BorderPane() {
 		),
 		SettingsItem(
 			"Font Color",
-			"The main color of the application's font. Usually set to a color near white.",
+			"The main color of the application's font. Usually set to a color close to white.",
 			SettingsItem.ColorField(Settings.fontMain)
 		),
 		SettingsGroup("Account"),
@@ -824,12 +824,12 @@ class ChatView : BorderPane() {
 			this.left = Circle(15.0).apply {
 				setAlignment(this, Pos.TOP_CENTER)
 				this.fill = ImagePattern(
-					user.avatar
+					Image(user.img)
 				)
 			}
 
 			this.center = VBox(
-				FontManager.boldLabel(user.username).apply {
+				FontManager.boldLabel(user.uname).apply {
 					this.isWrapText = false
 					this.prefHeight = 30.0
 				},  element

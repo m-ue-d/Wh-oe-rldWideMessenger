@@ -13,6 +13,7 @@ public class Settings {
     }
 
     public static final String QUOTE = "The messenger with revolutionary technology";
+
     public static final SimpleStringProperty title = new SimpleStringProperty(
         "Whörld Wide Messenger"
     );
