@@ -35,4 +35,3 @@ class App : Application() {
 		stage.show()
 	}
 }
-

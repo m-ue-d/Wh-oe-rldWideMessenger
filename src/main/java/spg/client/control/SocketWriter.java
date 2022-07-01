@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class SocketWriter extends Thread {
 	private ObjectOutputStream writer;
-	private Socket socket;
+	private Socket socket;	//serverSocket
 	private Client client;
 
 	public SocketWriter(Socket socket, Client client) {
@@ -32,10 +32,15 @@ public class SocketWriter extends Thread {
 		var scanner = new Scanner(System.in);
 
 		while (true) {
+
+			int[] ids = {0};	/*  <- NUR TEST
+			-- Ich such noch ne möglichkeit, die Publickeys der anderen User zu bekommen. Die ids hier sollen durch ein seperates Textfeld im View eingegeben werden. Muss das noch gut mit Fabi besprechen.*/
+
+
 			var input = scanner.nextLine();
 			var packet = new Packet("UserMessage", new PacketByteBuffer.Builder()
 				.writeMessage(input)
-				.build()
+				.build(ids)
 			);
 
 			try {

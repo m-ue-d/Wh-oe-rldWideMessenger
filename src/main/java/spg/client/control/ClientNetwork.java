@@ -25,7 +25,7 @@ public class ClientNetwork {
 	public static void handlePacket(Client client, Packet packet) {
 		for (PacketRegistryEntry entry : entries) {
 			if (entry.identifier.equals(packet.identifier)) {
-				entry.handler.handle(client, packet.content.getContent());
+				entry.handler.handle(client, client.decrypt(packet.content.getContent()));	//message wird decrypted
 				return;
 			}
 		}

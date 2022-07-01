@@ -1,6 +1,7 @@
 package spg.server;
 
 import spg.shared.security.AES;
+import spg.shared.security.RSA;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,17 +34,18 @@ public class PacketByteBuffer implements Serializable {
 			return this;
 		}
 
-		public PacketByteBuffer build() {
+		public PacketByteBuffer build(int[] ids) {
 			return new PacketByteBuffer(
-				content.toString().getBytes()
+				content.toString().getBytes(),
+					ids
 			);
 		}
 	}
 
 	private final byte[] content;
-	private final HashMap<String, byte[]> userKeys = new HashMap<>(); //befüllt mit den Namen der User(müssen daher vom server eindeutig verifiziert werden: sonst keine verbindung!   ----    und die dazu verschlüsselten versionen des threadkeys)
+	private final HashMap<String, byte[]> userKeys = new HashMap<>(); //befüllt mit den ids der User(müssen daher vom server eindeutig verifiziert werden: sonst keine verbindung!   ----    und die dazu verschlüsselten versionen des threadkeys)
 
-	public PacketByteBuffer(byte[] content) { //solten auch die reciever im Konstruktor sein
+	public PacketByteBuffer(byte[] content, int[] ids) {
 
 		byte[] x= content;
 
@@ -52,6 +54,8 @@ public class PacketByteBuffer implements Serializable {
 		x= aes.encrypt(Arrays.toString(content),key).getBytes();	//tatsächliche Verschlüsselung des Contents
 
 		//Hashmap befüllen
+
+		//im server brauche ich noch eine Möglichkeit, den public Key eines verbundenen Users per id zu erhalten
 
 		/*
 		for (ClientMain client:receivers) { //hashmap befüllen
@@ -70,13 +74,13 @@ public class PacketByteBuffer implements Serializable {
 
 	public static PacketByteBuffer empty() {
 		return new PacketByteBuffer.Builder()
-			.build();
+			.build(null);
 	}
 
 	public static PacketByteBuffer test() {
 		return new PacketByteBuffer.Builder()
 			.writeMessage("Hello World!")
 			.writeTime(LocalDate.now())
-			.build();
+			.build(null);
 	}
 }

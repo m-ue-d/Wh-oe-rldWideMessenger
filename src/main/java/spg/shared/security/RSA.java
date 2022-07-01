@@ -3,7 +3,7 @@ package spg.shared.security;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
-class RSA
+public class RSA
 {
 /*
     p   //primzahl 1

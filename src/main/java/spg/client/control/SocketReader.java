@@ -3,6 +3,7 @@ package spg.client.control;
 import spg.server.Packet;
 
 import java.io.ObjectInputStream;
+import java.math.BigInteger;
 import java.net.Socket;
 
 public class SocketReader extends Thread {
