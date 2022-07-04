@@ -1,0 +1,26 @@
+package spg.client.view.template
+
+import javafx.beans.binding.Bindings
+import javafx.geometry.Insets
+import javafx.scene.layout.Background
+import javafx.scene.layout.BackgroundFill
+import javafx.scene.layout.BorderPane
+import javafx.scene.layout.CornerRadii
+import spg.client.model.Settings
+
+open class ViewPane : BorderPane() {
+	init {
+		this.padding = Insets(10.0)
+		this.backgroundProperty().bind(
+			Bindings.createObjectBinding({
+				Background(
+					BackgroundFill(
+						Settings.bgSecondary.value,
+						CornerRadii(10.0),
+						Insets.EMPTY
+					)
+				)
+			}, Settings.bgSecondary)
+		)
+	}
+}

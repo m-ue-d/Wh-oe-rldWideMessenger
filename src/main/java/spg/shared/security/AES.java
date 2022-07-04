@@ -12,9 +12,21 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class AES {
 
-    private SecretKeySpec secretKey;
+    /**
+     * Generates a new AES key.
+     * @return The symmetric key.
+     */
+    public static String genKey(){
+        StringBuilder key= new StringBuilder();
+        SecureRandom r= new SecureRandom();
+        for (int i=0;i<64;i++) {
+            int x = r.nextInt(129);
+            key.append((char) x);
+        }
+        return key.toString();
+    }
 
-    public void setKey(final String myKey) {
+    private static SecretKeySpec getKeySpec(final String myKey) {
         MessageDigest sha;
         byte[] key;
 
@@ -23,15 +35,16 @@ public class AES {
             sha = MessageDigest.getInstance("SHA-1");
             key = sha.digest(key);
             key = Arrays.copyOf(key, 16);
-            secretKey = new SecretKeySpec(key, "AES");
+            return new SecretKeySpec(key, "AES");
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
+            return null;
         }
     }
 
-    public String encrypt(final String strToEncrypt, final String secret) {
+    public static String encrypt(final String strToEncrypt, final String secret) {
         try {
-            setKey(secret);
+            SecretKeySpec secretKey = getKeySpec(secret);
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             return Base64.getEncoder()
@@ -39,30 +52,19 @@ public class AES {
         } catch (Exception e) {
             System.out.println("Error while encrypting: " + e);
         }
-        return null;
+        return "";
     }
 
-    public String decrypt(final String strToDecrypt, final String secret) {
+    public static String decrypt(final String strToDecrypt, final String secret) {
         try {
-            setKey(secret);
+            SecretKeySpec secretKey = getKeySpec(secret);
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             return new String(cipher.doFinal(Base64.getDecoder()
-                    .decode(strToDecrypt)));
+                .decode(strToDecrypt)));
         } catch (Exception e) {
             System.out.println("Error while decrypting: " + e);
+            return "";
         }
-        return null;
-    }
-
-    public static String genKey(){
-        StringBuilder key= new StringBuilder();
-        SecureRandom r= new SecureRandom();
-        for (int i=0;i<64;i++) {
-            int x = r.nextInt(129);
-
-            key.append((char) x);
-        }
-        return key.toString();
     }
 }

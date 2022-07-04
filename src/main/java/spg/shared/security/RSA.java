@@ -3,55 +3,73 @@ package spg.shared.security;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
-public class RSA
-{
-/*
-    p   //primzahl 1
-    q   //primzahl 2
-    N   //Teil beider Keys
-    phi //eulersche phi-funktion
-    e   //Teil des public key
-    d   //Teil des private key
-*/
+/**
+ * p = Primzahl 1
+ * q = Primzahl 2
+ * N = Teil beider Keys
+ *
+ * phi = Eulersche phi-funktion
+ * e = Teil des public key
+ * d = Teil des private key
+ */
+public class RSA {
 
-    private static final int bitlength = 4096;
+    private static final int bitLength = 4096;
 
-    public static BigInteger[] genKeyPair_plusN(){  //first ist private, then is public, then is n
+    /**
+     * Generate a new RSA keypair. The keypair consists of a private and public key + a shared modulus N.
+     * @return A new RSA keypair.
+     */
+    public static SecurityKeychain genKeyPair_plusN() {
+        // Note: Der braucht manchmal über 30 sekunden zu generieren xD
+        //  Kann man den irgendwie schneller machen?
         SecureRandom r= new SecureRandom();
-        BigInteger p= BigInteger.probablePrime(bitlength,r);
-        BigInteger q= BigInteger.probablePrime(bitlength,r);
+        BigInteger p= BigInteger.probablePrime(bitLength,r);
+        BigInteger q= BigInteger.probablePrime(bitLength,r);
+        // Bis dahin ----------------------------------------
         BigInteger N= p.multiply(q);
-        BigInteger phi= p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));   //Da p und q primzahlen sind, muss man nur 1 wegrechnen (Mathehenker)
-        BigInteger e= BigInteger.probablePrime(bitlength/2,r);
+        //Da p und q primzahlen sind, muss man nur 1 wegrechnen (Mathe henker)
+        BigInteger phi= p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
+        BigInteger e= BigInteger.probablePrime(bitLength /2,r);
 
         while(phi.gcd(e).compareTo(BigInteger.ONE) > 0 && e.compareTo(phi) < 0){
             e= e.add(BigInteger.ONE);
         }
         BigInteger d= e.modInverse(phi);
 
-
-        //nun die generierten Schlüssel übergeben
-        BigInteger[] x= new BigInteger[3];
-        x[0]=d;
-        x[1]=e;
-        x[2]=N;
-
-        return x;
+        // nun die generierten Schlüssel übergeben
+        return new SecurityKeychain(
+            new BigInteger[]{
+                d, //private key
+                e, //public key
+                N  //n
+            }
+        );
     }
 
-    public static byte[] encrypt(String msg, BigInteger key, BigInteger N){  //key==e
-        return (new BigInteger(msg.getBytes())).modPow(key,N).toByteArray();
+    /**
+     * Encrypts the given plaintext with the public key.
+     * @param text The plaintext to encrypt.
+     * @param key The public key.
+     * @param N The modulus.
+     * @return The ciphertext.
+     */
+    public static byte[] encrypt(byte[] text, BigInteger key, BigInteger N) {
+        return new BigInteger(text)
+            .modPow(key,N)
+            .toByteArray();
     }
-    //die Decode-Methode ist im Client, da man da den private-key braucht, den eben nur der Client hat =)
 
-
-    /*public static Packet bytesToObject(byte[] encoded){
-        try(ByteArrayInputStream is= new ByteArrayInputStream(encoded); ObjectInputStream oi= new ObjectInputStream(is)){
-            return (Packet)oi.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
-    }*/
-
+    /**
+     * Decrypts the given ciphertext with the private key.
+     * @param cipher The ciphertext to decrypt.
+     * @param key The private key.
+     * @param N The modulus.
+     * @return The plaintext.
+     */
+    public static byte[] decrypt(byte[] cipher, BigInteger key, BigInteger N) {
+        return new BigInteger(cipher)
+            .modPow(key,N)
+            .toByteArray();
+    }
 }

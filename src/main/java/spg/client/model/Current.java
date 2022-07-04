@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleStringProperty;
 
 public class Current {
     public static final SimpleStringProperty panel = new SimpleStringProperty(
-        Settings.title.get()
+        Settings.mainTitle.get()
     );
 
     public static final SimpleIntegerProperty server = new SimpleIntegerProperty(

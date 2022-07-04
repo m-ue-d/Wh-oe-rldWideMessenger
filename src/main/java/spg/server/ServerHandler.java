@@ -6,23 +6,17 @@ import io.netty.channel.ChannelHandlerContext;
 public class ServerHandler extends ChannelHandlerAdapter {
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        super.channelActive(ctx);
-
+    public void channelActive(ChannelHandlerContext ctx) {
         System.out.println("user connected: "+ctx.channel().remoteAddress());
     }
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        super.channelInactive(ctx);
-
+    public void channelInactive(ChannelHandlerContext ctx) {
         System.out.println("user disconnected: "+ctx.channel().remoteAddress());
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        super.exceptionCaught(ctx, cause);
-
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         cause.printStackTrace();
         ctx.close();
     }

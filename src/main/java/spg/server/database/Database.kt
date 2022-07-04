@@ -1,6 +1,7 @@
 package spg.server.database
 
 import spg.shared.User
+import java.math.BigInteger
 import java.nio.file.Files
 import java.nio.file.Path
 import java.sql.Connection
@@ -85,11 +86,16 @@ class Database {
 						it.getString("uname"),
 						LocalDateTime.parse(
 							it.getString("since"),
-							DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-						)
+							DateTimeFormatter.ofPattern(
+								"yyyy-MM-dd HH:mm:ss"
+							)
+						),
+						null,
+						BigInteger.valueOf(123456L)
 					)
 				}
-			} catch (_ : SQLException) {
+			} catch (e : SQLException) {
+				e.printStackTrace()
 				return null
 			}
 		}

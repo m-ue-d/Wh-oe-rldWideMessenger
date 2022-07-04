@@ -49,9 +49,8 @@ public class PacketByteBuffer implements Serializable {
 
 		byte[] x= content;
 
-		AES aes= new AES();
 		String key = AES.genKey();
-		x= aes.encrypt(Arrays.toString(content),key).getBytes();	//tatsächliche Verschlüsselung des Contents
+		x= AES.encrypt(Arrays.toString(content),key).getBytes();	//tatsächliche Verschlüsselung des Contents
 
 		//Hashmap befüllen
 

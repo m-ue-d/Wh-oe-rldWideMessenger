@@ -18,6 +18,7 @@ import javafx.scene.paint.Color
 import javafx.util.Duration
 import spg.client.model.Current
 import spg.client.model.Settings
+import spg.client.view.template.ViewPane
 import spg.client.view.utility.FlexExpander
 import spg.client.view.utility.FlexSpacer
 import java.util.*
@@ -44,28 +45,33 @@ class NavigationView : VBox() {
 			),
 
 			SidebarButton(
-				Image("/spg/client/images/menu/settings.png"), SettingsView(), toggleGroup
-			) {
-				MainView.sidebarViewNode.hide()
-				Current.panel.set("Settings")
-			},
-			SidebarButton(
-				Image("/spg/client/images/menu/explore.png"), BorderPane(), toggleGroup
-			) {
-				MainView.sidebarViewNode.hide()
-				Current.panel.set("Discover")
-			},
-			SidebarButton(
-				Image("/spg/client/images/menu/messages.png"), BorderPane(), toggleGroup
+				Image("/spg/client/images/menu/messages.png"), ViewPane(), toggleGroup
 			) {
 				MainView.sidebarViewNode.show()
 				Current.panel.set("Direct Messages")
 			},
 			SidebarButton(
+				Image("/spg/client/images/menu/friends.png"), ViewPane(), toggleGroup
+			) {
+				MainView.sidebarViewNode.hide()
+				Current.panel.set("Friends")
+			},
+
+			FlexSpacer(
+				20.0, vBox = true
+			),
+
+			SidebarButton(
 				Image("/spg/client/images/menu/servers.png"), ChatView(), toggleGroup
 			) {
 				MainView.sidebarViewNode.show()
 				Current.panel.set("Servers")
+			},
+			SidebarButton(
+				Image("/spg/client/images/menu/explore.png"), ViewPane(), toggleGroup
+			) {
+				MainView.sidebarViewNode.hide()
+				Current.panel.set("Discover")
 			},
 
 			FlexExpander(
@@ -73,15 +79,15 @@ class NavigationView : VBox() {
 			),
 
 			SidebarButton(
-				Image("/spg/client/images/menu/friends.png"), BorderPane(), toggleGroup
+				Image("/spg/client/images/menu/settings.png"), SettingsView(), toggleGroup
 			) {
 				MainView.sidebarViewNode.hide()
-				Current.panel.set("Friends")
+				Current.panel.set("Settings")
 			},
 		)
 	}
 
-	class ToggleGroup() {
+	class ToggleGroup {
 		private val buttons = mutableListOf<SidebarButton>()
 		fun add(button: SidebarButton) {
 			buttons.add(button)

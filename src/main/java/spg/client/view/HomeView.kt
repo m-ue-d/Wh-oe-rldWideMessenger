@@ -8,25 +8,15 @@ import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.layout.*
 import spg.client.model.Settings
+import spg.client.view.template.ViewPane
 import spg.client.view.utility.FlexSpacer
 import spg.client.view.utility.FontManager
 import java.awt.Desktop
 import java.net.URI
 
-class HomeView : BorderPane() {
+class HomeView : ViewPane() {
 	init {
 		this.center = HomePane()
-		this.backgroundProperty().bind(
-			Bindings.createObjectBinding({
-				Background(
-					BackgroundFill(
-						Settings.bgSecondary.value,
-						CornerRadii(10.0),
-						Insets.EMPTY
-					)
-				)
-			}, Settings.bgSecondary)
-		)
 	}
 
 	class HomePane : HBox() {

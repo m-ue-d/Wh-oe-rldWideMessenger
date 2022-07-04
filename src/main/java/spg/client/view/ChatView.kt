@@ -11,6 +11,7 @@ import javafx.scene.layout.*
 import javafx.scene.paint.ImagePattern
 import javafx.scene.shape.Circle
 import spg.client.model.Settings
+import spg.client.view.template.ViewPane
 import spg.client.view.utility.FlexSpacer
 import spg.client.view.utility.FontManager
 import spg.shared.User
@@ -19,25 +20,13 @@ import java.time.LocalDateTime
 import kotlin.io.path.extension
 import kotlin.io.path.name
 
-class ChatView : BorderPane() {
+class ChatView : ViewPane() {
 	init {
 		this.center = ChatPane()
-		this.backgroundProperty().bind(
-			Bindings.createObjectBinding({
-				Background(
-					BackgroundFill(
-						Settings.bgSecondary.value,
-						CornerRadii(10.0),
-						Insets.EMPTY
-					)
-				)
-			}, Settings.bgSecondary)
-		)
 	}
 
 	class ChatPane : VBox() {
 		init {
-			this.padding = Insets(10.0)
 			addMessage(0, "Servus!")
 		}
 
@@ -128,19 +117,20 @@ class ChatView : BorderPane() {
 		}
 	}
 
-	class ChatItem(userID: Int, element: Node) : BorderPane() {
+	class ChatItem(uid: Int, element: Node) : BorderPane() {
 		init {
-			val user = User(userID, "Heinz", LocalDateTime.now())
 			this.padding = Insets(10.0)
 			this.left = Circle(15.0).apply {
 				setAlignment(this, Pos.TOP_CENTER)
 				this.fill = ImagePattern(
-					Image(user.img)
+					Image(
+						"spg/server/database/avatars/0.png"
+					)
 				)
 			}
 
 			this.center = VBox(
-				FontManager.boldLabel(user.uname).apply {
+				FontManager.boldLabel("Heinz").apply {
 					this.isWrapText = false
 					this.prefHeight = 30.0
 				}, element
