@@ -10,13 +10,14 @@ import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import spg.client.App
+import spg.client.control.ClientNetwork
 import spg.client.model.Settings
-import spg.client.view.utility.FontManager
 import spg.client.view.template.Button
 import spg.client.view.template.TextField
 import spg.client.view.utility.FlexExpander
+import spg.client.view.utility.FontManager
 
-class SignupView : StackPane() {
+class WelcomeView : StackPane() {
 	companion object {
 		private lateinit var mainPane: StackPane
 
@@ -84,6 +85,8 @@ class SignupView : StackPane() {
 	}
 
 	class LoginPane : VBox() {
+		private val emailField : TextField
+		private val passwordField : TextField
 		init {
 			this.padding = Insets(30.0)
 			this.spacing = 20.0
@@ -113,14 +116,20 @@ class SignupView : StackPane() {
 				),
 
 				VBox(
-					TextField("Username"),
+					TextField("Email address").apply {
+						this@LoginPane.emailField = this
+					},
 
-					TextField("Password"),
+					TextField("Password").apply {
+						this@LoginPane.passwordField = this
+					},
 
 					Button("Reset your password", Color.web("#FFF176"), Image(
 						"/spg/client/images/settings/resetpwd.png"
 					)) {
-
+						ClientNetwork.reset(
+							emailField.text
+						)
 					}.apply {
 						this.alignment = Pos.CENTER
 					},
@@ -128,7 +137,10 @@ class SignupView : StackPane() {
 					Button("Log in", Color.web("#ECF0FF"), Image(
 						"/spg/client/images/settings/login.png"
 					)) {
-
+						ClientNetwork.login(
+							emailField.text,
+							passwordField.text
+						)
 					}.apply {
 						this.alignment = Pos.CENTER
 					},
@@ -150,6 +162,10 @@ class SignupView : StackPane() {
 	}
 
 	class SignupPane : VBox() {
+		private val usernameField : TextField
+		private val emailField : TextField
+		private val passwordField : TextField
+
 		init {
 			this.padding = Insets(30.0)
 			this.spacing = 20.0
@@ -179,16 +195,26 @@ class SignupView : StackPane() {
 				),
 
 				VBox(
-					TextField("Username"),
+					TextField("Username").apply {
+						this@SignupPane.usernameField = this
+					},
 
-					TextField("Email address"),
+					TextField("Email address").apply {
+						this@SignupPane.emailField = this
+					},
 
-					TextField("Password"),
+					TextField("Password").apply {
+						this@SignupPane.passwordField = this
+					},
 
 					Button("Sign up", Color.web("#B8FFB7"), Image(
 						"/spg/client/images/settings/signup.png"
 					)) {
-
+						ClientNetwork.signup(
+							usernameField.text,
+							emailField.text,
+							passwordField.text
+						)
 					}.apply {
 						this.alignment = Pos.CENTER
 					},

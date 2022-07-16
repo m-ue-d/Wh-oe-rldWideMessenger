@@ -2,11 +2,11 @@ package spg.shared.security;
 
 import java.math.BigInteger;
 
-public class SecurityKeychain {
+public class Keychain {
 
     private final BigInteger[] keys;
 
-    public SecurityKeychain(BigInteger[] keys) {
+    public Keychain(BigInteger[] keys) {
         this.keys = keys;
     }
 

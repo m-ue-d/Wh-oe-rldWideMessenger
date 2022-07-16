@@ -20,7 +20,7 @@ public class RSA {
      * Generate a new RSA keypair. The keypair consists of a private and public key + a shared modulus N.
      * @return A new RSA keypair.
      */
-    public static SecurityKeychain genKeyPair_plusN() {
+    public static Keychain genKeyPair_plusN() {
         // Note: Der braucht manchmal über 30 sekunden zu generieren xD
         //  Kann man den irgendwie schneller machen?
         SecureRandom r= new SecureRandom();
@@ -38,7 +38,7 @@ public class RSA {
         BigInteger d= e.modInverse(phi);
 
         // nun die generierten Schlüssel übergeben
-        return new SecurityKeychain(
+        return new Keychain(
             new BigInteger[]{
                 d, //private key
                 e, //public key

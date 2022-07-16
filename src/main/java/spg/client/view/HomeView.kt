@@ -1,13 +1,13 @@
 package spg.client.view
 
-import javafx.beans.binding.Bindings
 import javafx.event.EventHandler
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
-import javafx.scene.layout.*
-import spg.client.model.Settings
+import javafx.scene.layout.BorderPane
+import javafx.scene.layout.HBox
+import javafx.scene.layout.VBox
 import spg.client.view.template.ViewPane
 import spg.client.view.utility.FlexSpacer
 import spg.client.view.utility.FontManager

@@ -1,16 +1,12 @@
 package spg.client
 
-import javafx.animation.PauseTransition
 import javafx.application.Application
-import javafx.event.EventHandler
 import javafx.scene.Scene
 import javafx.stage.Stage
-import javafx.util.Duration
 import spg.client.control.ClientNetwork
 import spg.client.model.Settings
 import spg.client.view.MainView
-import spg.client.view.SignupView
-import spg.client.view.utility.AnyTransition
+import spg.client.view.WelcomeView
 
 fun main() {
 	Application.launch(
@@ -33,11 +29,16 @@ class App : Application() {
 
 	override fun start(s: Stage) {
 		// try to auto-login first, if possible
-		ClientNetwork.initialize()
+
+		// BUG: the client network blocks the main thread, so the app doesn't start until the network is ready
+		// this is a workaround for that, idk if putting it in a separate thread is a good idea
+		Thread {
+			ClientNetwork.initialize()
+		}.start()
 
 		if (Settings.account.value == null) {
 			stage = s.apply {
-				this.scene = Scene(SignupView(), 400.0, 450.0)
+				this.scene = Scene(WelcomeView(), 400.0, 450.0)
 				this.isResizable = false
 				this.show()
 			}

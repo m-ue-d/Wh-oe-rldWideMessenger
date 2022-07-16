@@ -9,13 +9,11 @@ import javafx.geometry.Pos
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.input.MouseEvent
-import javafx.scene.layout.Background
-import javafx.scene.layout.BackgroundFill
-import javafx.scene.layout.CornerRadii
-import javafx.scene.layout.HBox
+import javafx.scene.layout.*
 import javafx.scene.paint.Color
 import javafx.util.Duration
 import spg.client.model.Settings
+import spg.client.view.utility.AnyTransition
 import spg.client.view.utility.FontManager
 
 class Button(text: String, color: Color, icon: Image, onAction: EventHandler<MouseEvent>) : HBox(
@@ -51,7 +49,7 @@ class Button(text: String, color: Color, icon: Image, onAction: EventHandler<Mou
 			TranslateTransition().apply {
 				this.node = this@Button
 				this.fromY = this@Button.translateY
-				this.toY = -5.0
+				this.toY = -3.0
 				this.duration = Duration.seconds(0.1)
 				this.interpolator = Interpolator.EASE_OUT
 			}.play()

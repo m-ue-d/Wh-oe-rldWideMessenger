@@ -1,17 +1,16 @@
 package spg.client.control;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import spg.shared.security.RSA;
-
-import java.math.BigInteger;
-import java.net.Socket;
+import spg.shared.network.ClientConnection;
+import spg.shared.network.NetworkSide;
+import spg.shared.network.PacketDecoder;
+import spg.shared.network.PacketEncoder;
 
 public class Client {
 	private final String host;
@@ -36,6 +35,7 @@ public class Client {
 
 	public void start() {
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
+		ClientConnection connection = new ClientConnection(NetworkSide.CLIENT);
 		try{
 			new Bootstrap()
 				.group(workerGroup)
@@ -44,16 +44,21 @@ public class Client {
 				.handler(new ChannelInitializer<SocketChannel>() {
 					@Override
 					public void initChannel(SocketChannel ch) {
-						ch.pipeline().addLast(new ClientHandler());
+						ClientNetwork.connection = connection;
+						ch.pipeline().addLast(
+							new PacketDecoder(NetworkSide.SERVER),
+							new PacketEncoder(NetworkSide.CLIENT),
+							connection
+						);
 					}
 				})
-				.connect(host, port).sync()
-				.channel().closeFuture().sync();
-		}
-		catch (InterruptedException e){
-			e.printStackTrace();
-		}
-		finally {
+				.connect(host, port)
+				.syncUninterruptibly()
+
+				.channel()
+				.closeFuture()
+				.syncUninterruptibly();
+		} finally {
 			workerGroup.shutdownGracefully();
 		}
 	}

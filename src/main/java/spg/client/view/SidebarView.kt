@@ -1,12 +1,15 @@
 package spg.client.view
 
-import javafx.animation.*
+import javafx.animation.FadeTransition
 import javafx.beans.binding.Bindings
 import javafx.geometry.Insets
-import javafx.scene.layout.*
+import javafx.scene.layout.Background
+import javafx.scene.layout.BackgroundFill
+import javafx.scene.layout.BorderPane
+import javafx.scene.layout.CornerRadii
 import javafx.util.Duration
 import spg.client.model.Settings
-import spg.client.view.utility.*
+import spg.client.view.utility.AnyTransition
 
 class SidebarView : BorderPane() {
 	private val panelWidth: Double = 200.0

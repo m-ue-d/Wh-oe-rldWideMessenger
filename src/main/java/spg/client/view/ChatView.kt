@@ -1,22 +1,19 @@
 package spg.client.view
 
-import javafx.beans.binding.Bindings
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.control.Label
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
-import javafx.scene.layout.*
+import javafx.scene.layout.BorderPane
+import javafx.scene.layout.VBox
 import javafx.scene.paint.ImagePattern
 import javafx.scene.shape.Circle
-import spg.client.model.Settings
 import spg.client.view.template.ViewPane
 import spg.client.view.utility.FlexSpacer
 import spg.client.view.utility.FontManager
-import spg.shared.User
 import java.nio.file.Path
-import java.time.LocalDateTime
 import kotlin.io.path.extension
 import kotlin.io.path.name
 

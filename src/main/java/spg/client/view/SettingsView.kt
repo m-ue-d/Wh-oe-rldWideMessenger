@@ -2,7 +2,6 @@ package spg.client.view
 
 import javafx.animation.Interpolator
 import javafx.beans.binding.Bindings
-import javafx.beans.property.ObjectProperty
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.event.EventHandler
 import javafx.geometry.Insets
@@ -10,14 +9,12 @@ import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.scene.control.ScrollPane
 import javafx.scene.control.Separator
-import javafx.scene.control.TextField
 import javafx.scene.image.Image
 import javafx.scene.layout.*
 import javafx.scene.paint.Color
 import javafx.scene.paint.ImagePattern
 import javafx.scene.shape.Circle
 import javafx.util.Duration
-import javafx.util.StringConverter
 import spg.client.model.Settings
 import spg.client.view.template.Button
 import spg.client.view.template.ColorField

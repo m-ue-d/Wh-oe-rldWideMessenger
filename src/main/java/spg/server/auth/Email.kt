@@ -11,67 +11,65 @@ import javax.mail.internet.InternetAddress
 import javax.mail.internet.MimeMessage
 import kotlin.io.path.toPath
 
-class Email {
-	companion object {
-		private val code = Code()
+object Email {
+	private val code = Code()
 
-		lateinit var session: Session
-			private set
+	lateinit var session: Session
+		private set
 
-		private lateinit var from: String
+	private lateinit var from: String
 
-		fun initialize() {
-			Files.readString(
-				Path.of("/Users/fabian/Documents/Very Secure Folder/email-connection.txt")
-			).split(",").let {
-				from = it[0]
-				val pwd = it[1]
-				val host = it[2]
+	fun initialize() {
+		Files.readString(
+			Path.of("/Users/fabian/Documents/Very Secure Folder/email-connection.txt")
+		).split(",").let {
+			from = it[0]
+			val pwd = it[1]
+			val host = it[2]
 
-				val properties = System.getProperties().apply {
-					this["mail.smtp.host"] = host
-					this["mail.smtp.port"] = "465"
-					this["mail.smtp.ssl.enable"] = "true"
-					this["mail.smtp.auth"] = "true"
-				}
-
-				session = Session.getInstance(properties, object : Authenticator() {
-					override fun getPasswordAuthentication() : PasswordAuthentication {
-						return PasswordAuthentication(from, pwd)
-					}
-				})
+			val properties = System.getProperties().apply {
+				this["mail.smtp.host"] = host
+				this["mail.smtp.port"] = "465"
+				this["mail.smtp.ssl.enable"] = "true"
+				this["mail.smtp.auth"] = "true"
 			}
-		}
 
-		fun genCode() : String {
-			return code.get()
-		}
-
-		fun sendMail(recipient: String, code: String) {
-			try {
-				MimeMessage(session).apply {
-					this.setFrom(InternetAddress(Companion.from))
-					this.addRecipient(
-						Message.RecipientType.TO, InternetAddress(recipient)
-					)
-					this.subject = "Your Verification Code!"
-					this.setText(
-						Files.readString(
-							this::class.java.getResource("/spg/server/email/email minified.html")!!.toURI().toPath()
-						)
-							.replace("{{ code }}", code)
-							.replace("{{ date }}", LocalDate.now().format(
-								DateTimeFormatter.ofPattern(
-									"dd.MM.yyyy"
-								))), "UTF-8", "html"
-					)
-				}.let {
-					println("Sending verification code to $recipient...")
-					Transport.send(it)
+			session = Session.getInstance(properties, object : Authenticator() {
+				override fun getPasswordAuthentication() : PasswordAuthentication {
+					return PasswordAuthentication(from, pwd)
 				}
-			} catch (e: MessagingException) {
-				println("Error sending verification code: " + e.message)
+			})
+		}
+	}
+
+	fun genCode() : String {
+		return code.get()
+	}
+
+	fun sendMail(recipient: String, code: String) {
+		try {
+			MimeMessage(session).apply {
+				this.setFrom(InternetAddress(Email.from))
+				this.addRecipient(
+					Message.RecipientType.TO, InternetAddress(recipient)
+				)
+				this.subject = "Your Verification Code!"
+				this.setText(
+					Files.readString(
+						this::class.java.getResource("/spg/server/email/email minified.html")!!.toURI().toPath()
+					)
+						.replace("{{ code }}", code)
+						.replace("{{ date }}", LocalDate.now().format(
+							DateTimeFormatter.ofPattern(
+								"dd.MM.yyyy"
+							))), "UTF-8", "html"
+				)
+			}.let {
+				println("Sending verification code to $recipient...")
+				Transport.send(it)
 			}
+		} catch (e: MessagingException) {
+			println("Error sending verification code: " + e.message)
 		}
 	}
 

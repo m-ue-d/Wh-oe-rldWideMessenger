@@ -7,9 +7,6 @@ import javafx.scene.paint.Color;
 import spg.client.view.utility.Interpolators;
 import spg.shared.User;
 
-import java.math.BigInteger;
-import java.time.LocalDateTime;
-
 public class Settings {
     public static void readSettings() {
         // read settings from file
