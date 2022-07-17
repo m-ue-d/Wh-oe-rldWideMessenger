@@ -34,7 +34,8 @@ public class ServerNetwork {
             }
         }, "Time");
         timer.start();
-//        keychain = RSA.genKeyPair_plusN();
+        // NOTE: remove this line when done with debugging.
+        // keychain = RSA.genKeyPair_plusN();
         System.out.println();
         timer.stop();
     }
@@ -42,12 +43,28 @@ public class ServerNetwork {
     /**
      * Maps a client id to the communication channel.
      * @param id The client's uid.
-     *
-     * TODO: get instance from connections list @see {@link Server childHandler}
+     * @param connection The client's communication connection.
      */
-    public static void mapClient(int id) {
-        ClientConnection connection = null;
+    public static void mapConnection(int id, ClientConnection connection) {
         clients.put(id, connection);
+    }
+
+    /**
+     * Gets the communication channel for a client's uid.
+     * @param id The client's uid.
+     * @return The client's communication channel.
+     */
+    public static ClientConnection getConnection(int id) {
+        return clients.get(id);
+    }
+
+    /**
+     * Removes a client's communication channel from the map.
+     * @param id The client's uid.
+     * @return The client's communication channel, which may be closed by then.
+     */
+    public static ClientConnection removeConnection(int id) {
+        return clients.remove(id);
     }
 
     public static void registerClient(String uname, String email, String password) {

@@ -1,9 +1,12 @@
 package spg.shared.network.c2s;
 
-import spg.shared.listeners.ServerAuthListener;
+import spg.shared.network.c2s.listener.ServerAuthListener;
 import spg.shared.network.Packet;
 import spg.shared.network.PacketBuf;
 
+/**
+ * A packet sent by the client to the server to signup on the platform.
+ */
 public final class SignupC2SPacket implements Packet<ServerAuthListener> {
     private final String username;
     private final String email;

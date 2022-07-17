@@ -1,6 +1,5 @@
-package spg.shared.listeners;
+package spg.shared.network.c2s.listener;
 
-import spg.shared.network.ClientConnection;
 import spg.shared.network.PacketListener;
 import spg.shared.network.c2s.LoginC2SPacket;
 import spg.shared.network.c2s.ResetC2SPacket;

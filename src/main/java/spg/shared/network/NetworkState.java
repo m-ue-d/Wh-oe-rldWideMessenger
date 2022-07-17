@@ -1,6 +1,6 @@
 package spg.shared.network;
 
-import spg.shared.listeners.ServerAuthListener;
+import spg.shared.network.c2s.listener.ServerAuthListener;
 import spg.shared.network.c2s.LoginC2SPacket;
 import spg.shared.network.c2s.ResetC2SPacket;
 import spg.shared.network.c2s.SignupC2SPacket;

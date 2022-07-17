@@ -1,6 +1,10 @@
 package spg.shared.network;
 
 import io.netty.buffer.ByteBuf;
+import spg.shared.chatting.ChatBase;
+import spg.shared.chatting.ChatFile;
+import spg.shared.chatting.ChatImage;
+import spg.shared.chatting.ChatText;
 import spg.shared.utility.ByteBufImpl;
 
 import java.math.BigInteger;
@@ -23,7 +27,6 @@ public class PacketBuf extends ByteBufImpl {
             writeByte(value & 127 | 128);
             value >>>= 7;
         }
-
         writeByte(value);
     }
 
@@ -34,12 +37,11 @@ public class PacketBuf extends ByteBufImpl {
     public int readVarInt() {
         int run = 0, len = 0;
         byte cur;
-
         do {
             cur = readByte();
             run |= (cur & 127) << len++ * 7;
             if (len > 5) {
-                throw new RuntimeException("Var-Int too big");
+                throw new RuntimeException("VarInt too big");
             }
         } while ((cur & 128) == 128);
 
@@ -75,8 +77,7 @@ public class PacketBuf extends ByteBufImpl {
      * @see #readRSAKey() to read the key back.
      */
     public void writeRSAKey(BigInteger key) {
-        writeVarInt(key.bitLength());
-        writeBytes(key.toByteArray());
+        writeString(key.toString());
     }
 
     /**
@@ -86,9 +87,42 @@ public class PacketBuf extends ByteBufImpl {
      * @see #writeRSAKey(BigInteger) to write the key to the buffer.
      */
     public BigInteger readRSAKey() {
-        int len = readVarInt();
-        return new BigInteger(
-            readBytes(len).toString(StandardCharsets.UTF_8)
-        );
+        return new BigInteger(readString());
+    }
+
+    /**
+     * Writes an arbitrary message to the buffer.
+     * @param message The message to write.
+     *
+     * @see #readChatText() to read a text back.
+     * @see #readChatImage() to read an image back.
+     * @see #readChatFile() to read a file back.
+     */
+    public <T extends ChatBase<?>> void writeChatMessage(T message) {
+        writeString(message.toString());
+    }
+
+    /**
+     * Reads a ChatText from the buffer.
+     * @return The text read.
+     */
+    public ChatText readChatText() {
+        return new ChatText(readString());
+    }
+
+    /**
+     * Reads a ChatImage from the buffer.
+     * @return The image read.
+     */
+    public ChatImage readChatImage() {
+        return new ChatImage(readString());
+    }
+
+    /**
+     * Reads a ChatFile from the buffer.
+     * @return The file read.
+     */
+    public ChatFile readChatFile() {
+        return new ChatFile(readString());
     }
 }

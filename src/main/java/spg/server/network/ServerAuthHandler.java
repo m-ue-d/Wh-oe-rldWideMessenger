@@ -2,13 +2,19 @@ package spg.server.network;
 
 import spg.server.ServerNetwork;
 import spg.shared.User;
-import spg.shared.listeners.ServerAuthListener;
+import spg.shared.network.c2s.listener.ServerAuthListener;
 import spg.shared.network.ClientConnection;
 import spg.shared.network.c2s.LoginC2SPacket;
 import spg.shared.network.c2s.ResetC2SPacket;
 import spg.shared.network.c2s.SignupC2SPacket;
 
 public class ServerAuthHandler implements ServerAuthListener {
+
+    private final ClientConnection connection;
+
+    public ServerAuthHandler(ClientConnection connection) {
+        this.connection = connection;
+    }
 
     @Override
     public void onLogin(LoginC2SPacket buf) {
@@ -17,7 +23,8 @@ public class ServerAuthHandler implements ServerAuthListener {
 
         User user = ServerNetwork.loginClient(email, password);
         if (user != null) {
-            ServerNetwork.mapClient(user.getId());
+            ServerNetwork.mapConnection(user.getId(), connection);
+            connection.setListener(new ServerChatHandler(connection));
         }
     }
 

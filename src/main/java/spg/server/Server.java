@@ -50,7 +50,7 @@ public class Server {
 					@Override
 					public void initChannel(SocketChannel ch) {
 						ClientConnection connection = new ClientConnection(NetworkSide.SERVER);
-						connection.setListener(new ServerAuthHandler());
+						connection.setListener(new ServerAuthHandler(connection));
 						ch.pipeline()
 							.addLast(new PacketDecoder(NetworkSide.CLIENT))
 							.addLast(new PacketEncoder(NetworkSide.SERVER))

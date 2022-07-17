@@ -7,6 +7,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import spg.client.control.network.ClientChatHandler;
 import spg.shared.network.ClientConnection;
 import spg.shared.network.NetworkSide;
 import spg.shared.network.PacketDecoder;
@@ -45,6 +46,7 @@ public class Client {
 					@Override
 					public void initChannel(SocketChannel ch) {
 						ClientNetwork.connection = connection;
+						connection.setListener(new ClientChatHandler(connection));
 						ch.pipeline().addLast(
 							new PacketDecoder(NetworkSide.SERVER),
 							new PacketEncoder(NetworkSide.CLIENT),
