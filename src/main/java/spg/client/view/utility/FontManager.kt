@@ -19,6 +19,7 @@ class FontManager {
 			return Label(text).apply {
 				this.textFillProperty().bind(Settings.fontMain)
 				this.font = regularFont(size)
+				this.isWrapText = true
 			}
 		}
 
@@ -34,6 +35,7 @@ class FontManager {
 			return Label(text).apply {
 				this.textFillProperty().bind(Settings.fontMain)
 				this.font = boldFont(size)
+				this.isWrapText = true
 			}
 		}
 	}

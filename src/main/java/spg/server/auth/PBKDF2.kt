@@ -30,6 +30,7 @@ object PBKDF2 {
 
 	/**
 	 * Hash a password for storage. Equivalent to php's password_hash.
+	 * @param password The password to hash.
 	 * @return a secure authentication token to be stored for later authentication
 	 */
 	fun hash(password : CharArray) : String {
@@ -45,6 +46,8 @@ object PBKDF2 {
 
 	/**
 	 * Authenticate with a password and a stored password token. Equivalent to php's password_verify.
+	 * @param password the password from the login packet
+	 * @param token the password token stored in the database
 	 * @return true if the password and token match
 	 */
 	fun verify(password: CharArray, token: String) : Boolean {
@@ -59,11 +62,18 @@ object PBKDF2 {
 		var zero = 0
 		for (idx in check.indices)
 			zero = zero or (
-					hash[salt.size + idx].toInt() xor check[idx].toInt()
-					)
+				hash[salt.size + idx].toInt() xor check[idx].toInt()
+			)
 		return zero == 0
 	}
 
+	/**
+	 * PBKDF2 with HMAC-SHA1. Equivalent to php's hash_pbkdf2.
+	 * @param password the password to hash
+	 * @param salt the salt
+	 * @param iterations the number of iterations to apply
+	 * @return the derived key
+	 */
 	private fun pbkdf2(password : CharArray, salt : ByteArray, iterations : Int) : ByteArray {
 		return SecretKeyFactory
 			.getInstance(ALGORITHM)

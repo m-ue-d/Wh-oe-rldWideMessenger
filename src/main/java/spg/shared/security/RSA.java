@@ -2,28 +2,31 @@ package spg.shared.security;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * p = Primzahl 1
- * q = Primzahl 2
- * N = Teil beider Keys
+ * p = Primzahl 1; Länge: 617 characters
+ * q = Primzahl 2; Länge: 2466 characters
+ * N = Teil beider Keys; Länge: 2466 characters
  *
  * phi = Eulersche phi-funktion
  * e = Teil des public key
  * d = Teil des private key
  */
-public class RSA {
+public final class RSA {
 
-    private static final int bitLength = 4096;
+    public static final RSA INSTANCE = new RSA();
 
     /**
      * Generate a new RSA keypair. The keypair consists of a private and public key + a shared modulus N.
      * @return A new RSA keypair.
      */
-    public static Keychain genKeyPair_plusN() {
-        // Note: Der braucht manchmal über 30 sekunden zu generieren xD
+    public Keychain genKeyPair() {
+        // NOTE: Der braucht manchmal über 30 sekunden zu generieren xD
         //  Kann man den irgendwie schneller machen?
         SecureRandom r= new SecureRandom();
+        int bitLength = 4096;
         BigInteger p= BigInteger.probablePrime(bitLength,r);
         BigInteger q= BigInteger.probablePrime(bitLength,r);
         // Bis dahin ----------------------------------------
@@ -31,19 +34,17 @@ public class RSA {
         //Da p und q primzahlen sind, muss man nur 1 wegrechnen (Mathe henker)
         BigInteger phi= p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
         BigInteger e= BigInteger.probablePrime(bitLength /2,r);
-
-        while(phi.gcd(e).compareTo(BigInteger.ONE) > 0 && e.compareTo(phi) < 0){
+        while (phi.gcd(e).compareTo(BigInteger.ONE) > 0 && e.compareTo(phi) < 0) {
             e= e.add(BigInteger.ONE);
         }
         BigInteger d= e.modInverse(phi);
 
-        // nun die generierten Schlüssel übergeben
         return new Keychain(
-            new BigInteger[]{
-                d, //private key
-                e, //public key
-                N  //n
-            }
+            new HashMap<>(Map.of(
+                "private", d,
+                "public", e,
+                "modulus", N
+            ))
         );
     }
 
@@ -54,7 +55,7 @@ public class RSA {
      * @param N The modulus.
      * @return The ciphertext.
      */
-    public static byte[] encrypt(byte[] text, BigInteger key, BigInteger N) {
+    public byte[] encrypt(byte[] text, BigInteger key, BigInteger N) {
         return new BigInteger(text)
             .modPow(key,N)
             .toByteArray();
@@ -67,7 +68,7 @@ public class RSA {
      * @param N The modulus.
      * @return The plaintext.
      */
-    public static byte[] decrypt(byte[] cipher, BigInteger key, BigInteger N) {
+    public byte[] decrypt(byte[] cipher, BigInteger key, BigInteger N) {
         return new BigInteger(cipher)
             .modPow(key,N)
             .toByteArray();

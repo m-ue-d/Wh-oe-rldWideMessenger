@@ -1,29 +1,39 @@
 package spg.client.view
 
+import javafx.animation.FadeTransition
+import javafx.animation.ScaleTransition
 import javafx.beans.binding.Bindings
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.image.Image
-import javafx.scene.layout.Background
-import javafx.scene.layout.StackPane
-import javafx.scene.layout.VBox
+import javafx.scene.layout.*
 import javafx.scene.paint.Color
+import javafx.util.Duration
 import spg.client.App
-import spg.client.control.ClientNetwork
+import spg.client.control.network.ClientNetwork
 import spg.client.model.Settings
 import spg.client.view.template.Button
 import spg.client.view.template.TextField
 import spg.client.view.utility.FlexExpander
+import spg.client.view.utility.FlexItem
 import spg.client.view.utility.FontManager
 
 class WelcomeView : StackPane() {
 	companion object {
 		private lateinit var mainPane: StackPane
 
-		fun showPane(node: Node) {
+		fun setPane(node: Node) {
 			mainPane.children.clear()
+			addPane(node)
+		}
+
+		fun addPane(node: Node) {
 			mainPane.children.add(node)
+		}
+
+		fun removePane(node: Node) {
+			mainPane.children.remove(node)
 		}
 	}
 
@@ -45,12 +55,9 @@ class WelcomeView : StackPane() {
 			)
 
 			this.children.addAll(
-				FontManager.boldLabel("Welcome to Whörld Wide Messenger!", 26.0).apply {
-					this.isWrapText = true
-				},
+				FontManager.boldLabel("Welcome to Whörld Wide Messenger!", 26.0),
 
 				FontManager.regularLabel("The messenger with revolutionary technology", 16.0).apply {
-					this.isWrapText = true
 					this.opacity = 0.5
 				},
 
@@ -63,7 +70,7 @@ class WelcomeView : StackPane() {
 						"/spg/client/images/settings/login.png"
 					)) {
 						App.resize(650.0)
-						showPane(LoginPane())
+						setPane(LoginPane())
 					}.apply {
 						this.alignment = Pos.CENTER
 					},
@@ -72,7 +79,7 @@ class WelcomeView : StackPane() {
 						"/spg/client/images/settings/signup.png"
 					)) {
 						App.resize(650.0)
-						showPane(SignupPane())
+						setPane(SignupPane())
 					}.apply {
 						this.alignment = Pos.CENTER
 					}
@@ -97,17 +104,13 @@ class WelcomeView : StackPane() {
 			)
 
 			this.children.addAll(
-				FontManager.boldLabel("Log into your account", 26.0).apply {
-					this.isWrapText = true
-				},
+				FontManager.boldLabel("Log into your account", 26.0),
 
 				FontManager.regularLabel("Type in your email address and your password.", 16.0).apply {
-					this.isWrapText = true
 					this.opacity = 0.5
 				},
 
-				FontManager.regularLabel("In case you forgot the password, you can reset it anytime.", 16.0).apply {
-					this.isWrapText = true
+				FontManager.regularLabel("In case you forgot the password, you can reset it anytime. Just type in your new password into the password field.", 16.0).apply {
 					this.opacity = 0.5
 				},
 
@@ -127,8 +130,8 @@ class WelcomeView : StackPane() {
 					Button("Reset your password", Color.web("#FFF176"), Image(
 						"/spg/client/images/settings/resetpwd.png"
 					)) {
-						ClientNetwork.reset(
-							emailField.text
+						ClientNetwork.INSTANCE.reset(
+							emailField.text, passwordField.text
 						)
 					}.apply {
 						this.alignment = Pos.CENTER
@@ -137,7 +140,7 @@ class WelcomeView : StackPane() {
 					Button("Log in", Color.web("#ECF0FF"), Image(
 						"/spg/client/images/settings/login.png"
 					)) {
-						ClientNetwork.login(
+						ClientNetwork.INSTANCE.login(
 							emailField.text,
 							passwordField.text
 						)
@@ -149,7 +152,7 @@ class WelcomeView : StackPane() {
 						"/spg/client/images/misc/back.png"
 					)) {
 						App.resize(450.0)
-						showPane(WelcomePane())
+						setPane(WelcomePane())
 					}.apply {
 						this.alignment = Pos.CENTER
 					}
@@ -177,16 +180,13 @@ class WelcomeView : StackPane() {
 
 			this.children.addAll(
 				FontManager.boldLabel("Create a new account", 26.0).apply {
-					this.isWrapText = true
 				},
 
 				FontManager.regularLabel("Tell us your name, email address and choose a strong password.", 16.0).apply {
-					this.isWrapText = true
 					this.opacity = 0.5
 				},
 
 				FontManager.regularLabel("You will be sent a verification code to your email address.", 16.0).apply {
-					this.isWrapText = true
 					this.opacity = 0.5
 				},
 
@@ -210,7 +210,7 @@ class WelcomeView : StackPane() {
 					Button("Sign up", Color.web("#B8FFB7"), Image(
 						"/spg/client/images/settings/signup.png"
 					)) {
-						ClientNetwork.signup(
+						ClientNetwork.INSTANCE.signup(
 							usernameField.text,
 							emailField.text,
 							passwordField.text
@@ -223,13 +223,109 @@ class WelcomeView : StackPane() {
 						"/spg/client/images/misc/back.png"
 					)) {
 						App.resize(450.0)
-						showPane(WelcomePane())
+						setPane(WelcomePane())
 					}.apply {
 						this.alignment = Pos.CENTER
 					}
 				).apply {
 					this.padding = Insets(30.0, 50.0, 30.0, 50.0)
 					this.spacing = 22.0
+				}
+			)
+		}
+	}
+
+	class VerificationPane : VBox() {
+		private val verificationField : TextField
+
+		init {
+			FadeTransition().apply {
+				this.node = this@VerificationPane
+				this.fromValue = 0.0
+				this.toValue = 1.0
+				this.duration = Duration.seconds(0.5)
+			}.play()
+
+			ScaleTransition().apply {
+				this.node = this@VerificationPane
+				this.fromX = 0.8
+				this.fromY = 0.8
+				this.toX = 1.0
+				this.toY = 1.0
+				this.duration = Duration.seconds(1.0)
+				this.interpolatorProperty().bind(
+					Settings.easeInOutBack
+				)
+			}.play()
+
+			this.backgroundProperty().bind(
+				Bindings.createObjectBinding({
+					Background(
+						BackgroundFill(
+							Settings.bgPrimary.value,
+							CornerRadii(10.0),
+							Insets(30.0)
+						)
+					)
+				}, Settings.bgPrimary)
+			)
+
+			this.padding = Insets(50.0)
+			this.spacing = 20.0
+			this.alignment = Pos.CENTER
+			this.children.addAll(
+				FlexExpander(
+					vBox = true
+				),
+
+				FontManager.boldLabel("Verify your account", 26.0),
+
+				FontManager.regularLabel("A verification code was just sent to your email address.", 16.0).apply {
+					this.opacity = 0.5
+				},
+
+				FontManager.regularLabel("Type it in and click continue if you're ready.", 16.0).apply {
+					this.opacity = 0.5
+				},
+
+				FlexItem(
+					vBox = true
+				),
+
+				HBox(
+					TextField("Verification Code").apply {
+						this@VerificationPane.verificationField = this
+						this.lighter()
+					},
+
+					Button(icon = Image(
+						"/spg/client/images/misc/done.png"
+					)) {
+						ClientNetwork.INSTANCE.verify(
+							verificationField.text.uppercase()
+						)
+					}.apply {
+						this.alignment = Pos.CENTER
+						this.lighter()
+					}
+				).apply {
+					this.alignment = Pos.CENTER
+					this.spacing = 10.0
+				},
+
+				FlexExpander(
+					vBox = true
+				),
+
+				Button("Back", Color.web("#ECF0FF"), Image(
+					"/spg/client/images/misc/back.png"
+				)) {
+					WelcomeView.removePane(
+						this@VerificationPane
+					)
+				}.apply {
+					this.alignment = Pos.CENTER
+					this.lighter()
 				}
 			)
 		}

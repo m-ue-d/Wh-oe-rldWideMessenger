@@ -1,6 +1,5 @@
 package spg.server.network;
 
-import spg.server.ServerNetwork;
 import spg.shared.chatting.ChatText;
 import spg.shared.network.c2s.listener.ServerChatListener;
 import spg.shared.network.ClientConnection;
@@ -9,10 +8,12 @@ import spg.shared.network.c2s.ImageSentDirectC2SPacket;
 import spg.shared.network.c2s.TextSentDirectC2SPacket;
 import spg.shared.network.s2c.TextSentDirectS2CPacket;
 
+import java.time.LocalDateTime;
+
 public class ServerChatHandler implements ServerChatListener {
 
     private final ClientConnection connection;
-    private final int myUserId = 12345;
+    private final int myUserId = 12345; // TODO: remove this
 
     public ServerChatHandler(ClientConnection connection) {
         this.connection = connection;
@@ -22,10 +23,10 @@ public class ServerChatHandler implements ServerChatListener {
     public void onTextSentDirect(TextSentDirectC2SPacket buf) {
         int targetUserId = buf.getTargetUserId();
         ChatText message = buf.getText();
-        ServerNetwork.getConnection(targetUserId)
-            .send(new TextSentDirectS2CPacket(message, myUserId));
+        ServerNetwork.INSTANCE.getConnection(targetUserId)
+            .send(new TextSentDirectS2CPacket(message, myUserId, LocalDateTime.now()));
 
-        connection.send(new TextSentDirectS2CPacket(message, myUserId));
+        connection.send(new TextSentDirectS2CPacket(message, myUserId, LocalDateTime.now()));
     }
 
     @Override

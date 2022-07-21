@@ -1,14 +1,19 @@
 package spg.shared.network;
 
 import io.netty.buffer.ByteBuf;
+import spg.shared.User;
 import spg.shared.chatting.ChatBase;
 import spg.shared.chatting.ChatFile;
 import spg.shared.chatting.ChatImage;
 import spg.shared.chatting.ChatText;
+import spg.shared.security.AES;
+import spg.shared.security.RSA;
 import spg.shared.utility.ByteBufImpl;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class PacketBuf extends ByteBufImpl {
 
@@ -17,7 +22,70 @@ public class PacketBuf extends ByteBufImpl {
     }
 
     /**
-     * Writes an variable-length integer to the buffer that may use less bytes than a regular integer.
+     * Encrypts this packet with the given symmetric AES key.
+     * @param symmetricKey The symmetric key to encrypt with.
+     */
+    public void encrypt(final byte[] symmetricKey) {
+        byte[] bytes = new byte[readableBytes()];
+        getBytes(0, bytes);
+        byte[] encrypted = AES.INSTANCE.encrypt(
+            bytes, symmetricKey
+        );
+        if (encrypted != null) {
+            setBytes(0, encrypted);
+        } else {
+            throw new RuntimeException("Encryption failed.");
+        }
+    }
+
+    /**
+     * Decrypts this packet with the given symmetric AES key.
+     * @param symmetricKey The symmetric key to decrypt with.
+     */
+    public void decrypt(final byte[] symmetricKey) {
+        byte[] bytes = new byte[readableBytes()];
+        getBytes(0, bytes);
+        byte[] decrypted = AES.INSTANCE.decrypt(
+            bytes, symmetricKey
+        );
+        if (decrypted != null) {
+            setBytes(0, decrypted);
+        } else {
+            throw new IllegalStateException("Decryption failed.");
+        }
+    }
+
+    /**
+     * Encrypts this packet with the given asymmetric public RSA key.
+     * @param publicKey The public key to encrypt with.
+     * @param modulus The modulus to encrypt with.
+     */
+    public void encrypt(final BigInteger publicKey, final BigInteger modulus) {
+        byte[] bytes = new byte[readableBytes()];
+        getBytes(0, bytes);
+        System.out.println(new String(bytes));
+        byte[] encrypted = RSA.INSTANCE.encrypt(
+            bytes, publicKey, modulus
+        );
+        setBytes(0, encrypted);
+    }
+
+    /**
+     * Decrypts this packet with the given asymmetric private RSA key.
+     * @param privateKey The private key to decrypt with.
+     * @param modulus The modulus to decrypt with.
+     */
+    public void decrypt(final BigInteger privateKey, final BigInteger modulus) {
+        byte[] bytes = new byte[readableBytes()];
+        getBytes(0, bytes);
+        byte[] decrypted = RSA.INSTANCE.decrypt(
+            bytes, privateKey, modulus
+        );
+        setBytes(0, decrypted);
+    }
+
+    /**
+     * Writes a variable-length integer to the buffer that may use less bytes than a regular integer.
      * @param value The integer to write.
      *
      * @see #readVarInt() to read the integer back.
@@ -31,7 +99,7 @@ public class PacketBuf extends ByteBufImpl {
     }
 
     /**
-     * Reads an variable-length integer from the buffer.
+     * Reads a variable-length integer from the buffer.
      * @return The integer that was read.
      */
     public int readVarInt() {
@@ -54,9 +122,13 @@ public class PacketBuf extends ByteBufImpl {
      *
      * @see #readString() to read the string back.
      */
-    public void writeString(String str) {
-        writeVarInt(str.length());
-        writeBytes(str.getBytes());
+    public void writeString(final String str) {
+        if (str != null) {
+            writeVarInt(str.length());
+            writeBytes(str.getBytes());
+        } else {
+            writeVarInt(-1);
+        }
     }
 
     /**
@@ -67,7 +139,30 @@ public class PacketBuf extends ByteBufImpl {
      */
     public String readString() {
         int len = readVarInt();
-        return readBytes(len).toString(StandardCharsets.UTF_8);
+        if (len != -1) {
+            return readBytes(len).toString(StandardCharsets.UTF_8);
+        } else {
+            return "";
+        }
+    }
+
+    /**
+     * Writes an enum to the buffer.
+     * @param value The enum to write.
+     * @param <E> The enum type.
+     */
+    public <E extends Enum<E>> void writeEnum(final E value) {
+        writeVarInt(value.ordinal());
+    }
+
+    /**
+     * Reads an enum from the buffer.
+     * @param <E> The enum type.
+     * @param clazz The enum class.
+     * @return The enum read.
+     */
+    public <E extends Enum<E>> E readEnum(final Class<E> clazz) {
+        return clazz.getEnumConstants()[readVarInt()];
     }
 
     /**
@@ -76,8 +171,12 @@ public class PacketBuf extends ByteBufImpl {
      *
      * @see #readRSAKey() to read the key back.
      */
-    public void writeRSAKey(BigInteger key) {
-        writeString(key.toString());
+    public void writeRSAKey(final BigInteger key) {
+        if (key != null) {
+            writeString(key.toString());
+        } else {
+            writeString(null);
+        }
     }
 
     /**
@@ -86,8 +185,135 @@ public class PacketBuf extends ByteBufImpl {
      *
      * @see #writeRSAKey(BigInteger) to write the key to the buffer.
      */
-    public BigInteger readRSAKey() {
-        return new BigInteger(readString());
+    public final BigInteger readRSAKey() {
+        String key = readString();
+        if (!key.isEmpty()) {
+            return new BigInteger(key);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Writes an AES Key to the buffer.
+     * @param key The key to write.
+     *
+     * @see #readAESKey() to read the key back.
+     */
+    public void writeAESKey(final byte[] key) {
+        if (key != null && key.length != 64) {
+            writeBytes(key);
+        } else {
+            writeByte(0x00);
+        }
+    }
+
+    /**
+     * Reads an AES Key from the buffer.
+     * @return The key read.
+     *
+     * @see #writeAESKey(byte[]) to write the key to the buffer.
+     */
+    public final byte[] readAESKey() {
+        if (readByte() != 0x00) {
+            byte[] key = new byte[64];
+            readBytes(key);
+            return key;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Writes the shared modulus to the buffer.
+     * @param modulus The modulus to write.
+     *
+     * @see #readModulus() to read the modulus back.
+     */
+    public void writeModulus(final BigInteger modulus) {
+        if (modulus != null) {
+            writeString(modulus.toString());
+        } else {
+            writeString(null);
+        }
+    }
+
+    /**
+     * Reads the shared modulus from the buffer.
+     * @return The modulus read.
+     *
+     * @see #writeModulus(BigInteger) to write the modulus to the buffer.
+     */
+    public final BigInteger readModulus() {
+        String modulus = readString();
+        if (!modulus.isEmpty()) {
+            return new BigInteger(modulus);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Writes a timestamp to the buffer.
+     * @param timestamp The timestamp to write.
+     *
+     * @see #readTimestamp() to read the timestamp back.
+     */
+    public void writeTimestamp(final LocalDateTime timestamp) {
+        writeString(timestamp.format(
+            DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
+        ));
+    }
+
+    /**
+     * Reads a timestamp from the buffer.
+     * @return The timestamp read.
+     *
+     * @see #writeTimestamp(LocalDateTime) to write the timestamp to the buffer.
+     */
+    public final LocalDateTime readTimestamp() {
+        return LocalDateTime.parse(readString(),
+            DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
+        );
+    }
+
+    /**
+     * Writes a user to the buffer.
+     * @param user The user to write.
+     */
+    public void writeUser(final User user) {
+        if (user != null) {
+            writeVarInt(user.getId());
+            writeString(user.getUname());
+            writeString(user.getEmail());
+            writeString(user.getPassword());
+            writeTimestamp(user.getSince());
+            writeRSAKey(user.getPublicKey());
+            writeRSAKey(user.getPrivateKey());
+        } else {
+            writeVarInt(-1);
+        }
+    }
+
+    /**
+     * Reads a user from the buffer.
+     * @return The user read.
+     */
+    public final User readUser() {
+        int id = readVarInt();
+        if (id != -1) {
+            return new User(
+                id,
+                readString(),
+                readString(),
+                readString(),
+                readTimestamp(),
+                readRSAKey(),
+                readRSAKey()
+            );
+        }  else {
+            return null;
+        }
     }
 
     /**
@@ -98,7 +324,7 @@ public class PacketBuf extends ByteBufImpl {
      * @see #readChatImage() to read an image back.
      * @see #readChatFile() to read a file back.
      */
-    public <T extends ChatBase<?>> void writeChatMessage(T message) {
+    public <T extends ChatBase<?>> void writeChatMessage(final T message) {
         writeString(message.toString());
     }
 

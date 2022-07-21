@@ -38,4 +38,18 @@ class TextField(prompt: String? = null) : javafx.scene.control.TextField() {
 			}, Settings.bgPrimary)
 		)
 	}
+
+	fun lighter() {
+		this.backgroundProperty().bind(
+			Bindings.createObjectBinding({
+				return@createObjectBinding Background(
+					BackgroundFill(
+						Settings.bgSecondary.value,
+						CornerRadii(5.0),
+						Insets.EMPTY
+					)
+				)
+			}, Settings.bgSecondary)
+		)
+	}
 }

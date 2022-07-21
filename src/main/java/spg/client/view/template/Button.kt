@@ -16,16 +16,7 @@ import spg.client.model.Settings
 import spg.client.view.utility.AnyTransition
 import spg.client.view.utility.FontManager
 
-class Button(text: String, color: Color, icon: Image, onAction: EventHandler<MouseEvent>) : HBox(
-	ImageView(icon).apply {
-		this.fitWidth = 20.0
-		this.fitHeight = 20.0
-	},
-	FontManager.boldLabel(text, 16.0).apply {
-		this.textFillProperty().unbind()
-		this.textFill = color
-	},
-) {
+class Button(text: String? = null, color: Color? = null, icon: Image? = null, onAction: EventHandler<MouseEvent>) : HBox() {
 	init {
 		this.padding = Insets(10.0)
 		this.spacing = 10.0
@@ -42,6 +33,24 @@ class Button(text: String, color: Color, icon: Image, onAction: EventHandler<Mou
 				)
 			}, Settings.bgPrimary)
 		)
+
+		if (icon != null) {
+			this.children.add(
+				ImageView(icon).apply {
+					this.fitWidth = 20.0
+					this.fitHeight = 20.0
+				}
+			)
+		}
+
+		if (text != null) {
+			this.children.add(
+				FontManager.boldLabel(text, 16.0).apply {
+					this.textFillProperty().unbind()
+					this.textFill = color
+				}
+			)
+		}
 
 		this.onMouseClicked = onAction
 
@@ -64,5 +73,19 @@ class Button(text: String, color: Color, icon: Image, onAction: EventHandler<Mou
 				this.interpolator = Interpolator.EASE_OUT
 			}.play()
 		}
+	}
+
+	fun lighter() {
+		this.backgroundProperty().bind(
+			Bindings.createObjectBinding({
+				return@createObjectBinding Background(
+					BackgroundFill(
+						Settings.bgSecondary.value,
+						CornerRadii(5.0),
+						Insets.EMPTY
+					)
+				)
+			}, Settings.bgSecondary)
+		)
 	}
 }

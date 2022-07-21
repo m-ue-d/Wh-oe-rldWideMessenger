@@ -16,7 +16,7 @@ public class ClientChatHandler implements ClientChatListener {
 
     @Override
     public void onTextSentDirect(TextSentDirectS2CPacket buf) {
-        System.out.println("Received text message: " + buf.getText() + " from user " + buf.getSenderUserId());
+        System.out.println("Received text message: " + buf.getText() + " from user " + buf.getSenderUserId() + " on " + buf.getTimestamp());
     }
 
     @Override

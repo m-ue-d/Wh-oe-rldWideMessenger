@@ -6,7 +6,7 @@ import spg.shared.network.Packet;
 import spg.shared.network.PacketBuf;
 
 /**
- * A packet sent by the client to the server to send a message to a specific user.
+ * A packet sent by the client to the server to send a file to a specific user.
  */
 public final class FileSentDirectC2SPacket implements Packet<ServerChatListener> {
     private final ChatFile file;

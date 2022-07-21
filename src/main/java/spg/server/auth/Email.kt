@@ -20,6 +20,7 @@ object Email {
 	private lateinit var from: String
 
 	fun initialize() {
+		println("Initializing email server...")
 		Files.readString(
 			Path.of("/Users/fabian/Documents/Very Secure Folder/email-connection.txt")
 		).split(",").let {

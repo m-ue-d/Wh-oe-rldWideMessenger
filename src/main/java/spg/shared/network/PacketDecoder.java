@@ -31,8 +31,8 @@ public class PacketDecoder extends ReplayingDecoder<Packet<?>> {
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        super.exceptionCaught(ctx, cause);
-        System.out.println("Exception whilst decoding: " + cause.getMessage());
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        System.err.println("Exception whilst decoding: " + cause.getMessage());
+        cause.printStackTrace();
     }
 }

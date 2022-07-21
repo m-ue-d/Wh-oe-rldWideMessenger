@@ -21,6 +21,8 @@ import spg.client.view.template.ColorField
 import spg.client.view.template.ViewPane
 import spg.client.view.utility.*
 import java.time.format.DateTimeFormatter
+import kotlin.math.max
+import kotlin.math.min
 
 class SettingsView : ViewPane() {
 	init {
@@ -280,9 +282,10 @@ class SettingsView : ViewPane() {
 							FontManager.boldLabel("", 16.0).apply {
 								this.textProperty().bind(
 									Bindings.createObjectBinding({
+										val publicKey : String = Settings.account.value?.publicKey?.toString()
+											?: "A very long number"
 										return@createObjectBinding "${
-											Settings.account.value?.key?.toString()?.substring(0..20)
-												?: "A very long number"
+											publicKey.substring(0..min(20, publicKey.length - 1))
 										}..."
 									}, Settings.account)
 								)

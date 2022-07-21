@@ -1,9 +1,11 @@
 package spg.shared.network;
 
+import spg.shared.network.c2s.*;
 import spg.shared.network.c2s.listener.ServerAuthListener;
-import spg.shared.network.c2s.LoginC2SPacket;
-import spg.shared.network.c2s.ResetC2SPacket;
-import spg.shared.network.c2s.SignupC2SPacket;
+import spg.shared.network.c2s.listener.ServerChatListener;
+import spg.shared.network.s2c.*;
+import spg.shared.network.s2c.listener.ClientAuthListener;
+import spg.shared.network.s2c.listener.ClientChatListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,12 +23,28 @@ public enum NetworkState {
             .register(LoginC2SPacket.class, LoginC2SPacket::new)
             .register(SignupC2SPacket.class, SignupC2SPacket::new)
             .register(ResetC2SPacket.class, ResetC2SPacket::new)
+            .register(VerificationC2SPacket.class, VerificationC2SPacket::new)
+            .register(ServerPublicKeyC2SPacket.class, ServerPublicKeyC2SPacket::new)
         )
-        .setup(NetworkSide.SERVER, new PacketHandler<ServerAuthListener>()
-
+        .setup(NetworkSide.SERVER, new PacketHandler<ClientAuthListener>()
+            .register(LoginResponseS2CPacket.class, LoginResponseS2CPacket::new)
+            .register(SignupResponseS2CPacket.class, SignupResponseS2CPacket::new)
+            .register(ResetResponseS2CPacket.class, ResetResponseS2CPacket::new)
+            .register(ServerPublicKeyResponseS2CPacket.class, ServerPublicKeyResponseS2CPacket::new)
+        )
+    ),
+    CHATTING(new PacketHandlerInitializer()
+        .setup(NetworkSide.CLIENT, new PacketHandler<ServerChatListener>()
+            .register(TextSentDirectC2SPacket.class, TextSentDirectC2SPacket::new)
+            .register(ImageSentDirectC2SPacket.class, ImageSentDirectC2SPacket::new)
+            .register(FileSentDirectC2SPacket.class, FileSentDirectC2SPacket::new)
+        )
+        .setup(NetworkSide.SERVER, new PacketHandler<ClientChatListener>()
+            .register(TextSentDirectS2CPacket.class, TextSentDirectS2CPacket::new)
+            .register(ImageSentDirectS2CPacket.class, ImageSentDirectS2CPacket::new)
+            .register(FileSentDirectS2CPacket.class, FileSentDirectS2CPacket::new)
         )
     );
-    // TODO: MESSAGING(...)
 
     private final Map<NetworkSide, ? extends PacketHandler<? extends PacketListener>> handlers;
 

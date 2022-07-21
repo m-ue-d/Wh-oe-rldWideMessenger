@@ -1,17 +1,21 @@
 package spg.client.control;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import spg.client.control.network.ClientChatHandler;
+import spg.client.ClientGui;
+import spg.client.control.network.ClientAuthHandler;
+import spg.client.control.network.ClientNetwork;
 import spg.shared.network.ClientConnection;
 import spg.shared.network.NetworkSide;
 import spg.shared.network.PacketDecoder;
 import spg.shared.network.PacketEncoder;
+import spg.shared.network.c2s.ServerPublicKeyC2SPacket;
 
 public class Client {
 	private final String host;
@@ -26,6 +30,7 @@ public class Client {
 			? Integer.parseInt(args[1])
 			: 8080;
 
+		ClientGui.INSTANCE.initialize();
 		new Client(host, port).start();
 	}
 
@@ -44,18 +49,39 @@ public class Client {
 				.option(ChannelOption.SO_KEEPALIVE, true)
 				.handler(new ChannelInitializer<SocketChannel>() {
 					@Override
+					public void channelActive(ChannelHandlerContext ctx) {
+						System.out.println("Connected to server");
+					}
+
+					@Override
+					public void channelInactive(ChannelHandlerContext ctx) {
+						System.out.println("Disconnected from server");
+					}
+
+					@Override
 					public void initChannel(SocketChannel ch) {
-						ClientNetwork.connection = connection;
-						connection.setListener(new ClientChatHandler(connection));
+						ClientNetwork.INSTANCE.initialize();
+						ClientNetwork.INSTANCE.connection = connection;
+						connection.setListener(new ClientAuthHandler(connection));
 						ch.pipeline().addLast(
 							new PacketDecoder(NetworkSide.SERVER),
 							new PacketEncoder(NetworkSide.CLIENT),
 							connection
 						);
 					}
+
+					@Override
+					public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+						System.err.println("Error whilst connecting to server: " + cause.getMessage());
+					}
 				})
 				.connect(host, port)
-				.syncUninterruptibly()
+				.syncUninterruptibly().addListener(future -> {
+					System.out.println("Requesting server public key...");
+					ClientNetwork.INSTANCE.connection.send(
+						new ServerPublicKeyC2SPacket()
+					);
+				})
 
 				.channel()
 				.closeFuture()

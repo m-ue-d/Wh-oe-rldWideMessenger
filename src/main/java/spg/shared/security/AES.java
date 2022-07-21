@@ -9,31 +9,37 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
 
-public class AES {
+public final class AES {
+
+    public static final AES INSTANCE = new AES();
 
     /**
-     * Generates a new AES key.
+     * Generates a new symmetric AES key.
      * @return The symmetric key.
      */
-    public static String genKey(){
+    public byte[] genKey(){
         StringBuilder key= new StringBuilder();
         SecureRandom r= new SecureRandom();
         for (int i=0;i<64;i++) {
-            int x = r.nextInt(129);
+            int x = r.nextInt(128);
             key.append((char) x);
         }
-        return key.toString();
+        return key.toString().getBytes();
     }
 
-    private static SecretKeySpec getKeySpec(final String myKey) {
-        MessageDigest sha;
-        byte[] key;
-
+    /**
+     * Returns a secret KeySpec for the given key using SHA-1.
+     * @param myKey The key.
+     * @return The secret KeySpec.
+     */
+    private SecretKeySpec getKeySpec(final byte[] myKey) {
         try {
-            key = myKey.getBytes(StandardCharsets.UTF_8);
-            sha = MessageDigest.getInstance("SHA-1");
-            key = sha.digest(key);
-            key = Arrays.copyOf(key, 16);
+            byte[] key = myKey;
+            key = MessageDigest.getInstance("SHA-1")
+                .digest(key);
+            key = Arrays.copyOf(
+                key, 16
+            );
             return new SecretKeySpec(key, "AES");
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -41,29 +47,43 @@ public class AES {
         }
     }
 
-    public static String encrypt(final String strToEncrypt, final String secret) {
+    /**
+     * Encrypts the given plaintext with the given key.
+     * @param str The plaintext to encrypt.
+     * @param secret The key.
+     * @return The ciphertext.
+     */
+    public byte[] encrypt(final byte[] str, final byte[] secret) {
         try {
             SecretKeySpec secretKey = getKeySpec(secret);
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             return Base64.getEncoder()
-                    .encodeToString(cipher.doFinal(strToEncrypt.getBytes(StandardCharsets.UTF_8)));
+                .encodeToString(cipher.doFinal(str))
+                .getBytes();
         } catch (Exception e) {
             System.out.println("Error while encrypting: " + e);
         }
-        return "";
+        return null;
     }
 
-    public static String decrypt(final String strToDecrypt, final String secret) {
+    /**
+     * Decrypts the given ciphertext with the given key.
+     * @param str The ciphertext to decrypt.
+     * @param secret The key.
+     * @return The plaintext.
+     */
+    public byte[] decrypt(final byte[] str, final byte[] secret) {
         try {
             SecretKeySpec secretKey = getKeySpec(secret);
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             return new String(cipher.doFinal(Base64.getDecoder()
-                .decode(strToDecrypt)));
+                .decode(str)))
+                .getBytes();
         } catch (Exception e) {
             System.out.println("Error while decrypting: " + e);
-            return "";
+            return null;
         }
     }
 }

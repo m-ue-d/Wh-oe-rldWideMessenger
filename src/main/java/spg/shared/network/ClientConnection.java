@@ -13,6 +13,9 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
     private Channel channel;
     private PacketListener listener;
 
+    private String verificationCode;
+    private Runnable onVerificationCode;
+
     public ClientConnection(NetworkSide side) {
         this.side = side;
     }
@@ -41,9 +44,25 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
         return listener;
     }
 
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
+    }
+
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
+    public void setOnVerificationSuccess(Runnable onSuccess) {
+        this.onVerificationCode = onSuccess;
+    }
+
+    public void onVerificationCode() {
+        onVerificationCode.run();
+    }
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        System.out.println("Connected");
+        System.out.println("ClientConnection: Connected");
         channel = ctx.channel();
         channel.attr(PROTOCOL_KEY).set(
             NetworkState.AUTHENTICATION
@@ -52,7 +71,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        System.out.println("Disconnected");
+        System.out.println("ClientConnection: Disconnected");
         if (channel.isOpen()) {
             channel.close().awaitUninterruptibly();
         }
@@ -65,7 +84,12 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 
     @SuppressWarnings("unchecked")
     private static <T extends PacketListener> void handle(Packet<T> packet, PacketListener listener) {
-        packet.apply((T) listener);
+        try {
+            packet.apply((T) listener);
+        } catch (Exception e) {
+            System.err.println("ClientConnection: Error whilst handling packet, are you sure you have the correct listener?");
+            e.printStackTrace();
+        }
     }
 
     public void send(Packet<?> packet) {

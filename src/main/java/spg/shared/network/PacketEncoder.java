@@ -28,7 +28,7 @@ public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        super.exceptionCaught(ctx, cause);
         System.out.println("Exception whilst encoding: " + cause.getMessage());
+        cause.printStackTrace();
     }
 }

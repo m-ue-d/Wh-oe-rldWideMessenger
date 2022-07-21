@@ -5,7 +5,10 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import spg.server.auth.Email;
+import spg.server.database.Database;
 import spg.server.network.ServerAuthHandler;
+import spg.server.network.ServerNetwork;
 import spg.shared.network.ClientConnection;
 import spg.shared.network.NetworkSide;
 import spg.shared.network.PacketDecoder;
@@ -35,7 +38,9 @@ public class Server {
 							.addLast(new ChannelHandlerAdapter() {
 								@Override
 								public void channelActive(ChannelHandlerContext ctx) {
-									ServerNetwork.initialize();
+									ServerNetwork.INSTANCE.initialize();
+									Database.INSTANCE.initialize();
+									Email.INSTANCE.initialize();
 									System.out.println("Server active!");
 								}
 
