@@ -18,7 +18,7 @@ public final class ClientNetwork {
     public byte[] symmetricKey;
 
     public BigInteger serverPublicKey;
-    public BigInteger serverModulus;
+    public BigInteger serverModulus;//N
 
     public void initialize() {
         System.out.println("Initializing client network...");

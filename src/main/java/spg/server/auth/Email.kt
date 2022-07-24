@@ -22,7 +22,7 @@ object Email {
 	fun initialize() {
 		println("Initializing email server...")
 		Files.readString(
-			Path.of("/Users/fabian/Documents/Very Secure Folder/email-connection.txt")
+			Path.of("C:\\Users\\Admin\\Documents\\Very Secure Folder\\email-connection.txt")
 		).split(",").let {
 			from = it[0]
 			val pwd = it[1]

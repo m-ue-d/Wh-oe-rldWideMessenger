@@ -40,7 +40,7 @@ public class LoginC2SPacket implements Packet<ServerAuthListener> {
         buf.writeString(email);
         buf.writeString(password);
         buf.writeAESKey(symmetricKey);
-//        buf.encrypt(publicKey, modulus);
+//        buf.encrypt(publicKey, modulus);  //TODO Encrypt Packets
     }
 
     @Override

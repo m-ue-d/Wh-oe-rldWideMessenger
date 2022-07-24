@@ -15,9 +15,7 @@ import javax.crypto.spec.PBEKeySpec
  */
 object PBKDF2 {
 	private const val ID = "$31$"
-	private val ALGORITHM = Files.readString(
-		Path.of("/Users/fabian/Documents/Very Secure Folder/auth-algorithm.txt"), Charsets.UTF_8
-	)
+	private val ALGORITHM = "PBKDF2WithHmacSHA256"
 	private const val SIZE = 128
 	private val layout = Pattern.compile("\\$31\\$(\\d\\d?)\\$(.{43})")
 

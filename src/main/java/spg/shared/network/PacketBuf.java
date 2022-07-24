@@ -93,7 +93,7 @@ public class PacketBuf extends ByteBufImpl {
     public void writeVarInt(int value) {
         while ((value & -128) != 0) {
             writeByte(value & 127 | 128);
-            value >>>= 7;
+            value >>>= 7;   //what tha seven doin?
         }
         writeByte(value);
     }
