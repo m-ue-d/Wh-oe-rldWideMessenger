@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.ByteBufProcessor
 import java.io.InputStream
 import java.io.OutputStream
+import java.math.BigInteger
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.channels.GatheringByteChannel

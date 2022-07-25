@@ -11,9 +11,11 @@ import spg.shared.security.RSA;
 import spg.shared.utility.ByteBufImpl;
 
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 
 public class PacketBuf extends ByteBufImpl {
 
@@ -130,6 +132,23 @@ public class PacketBuf extends ByteBufImpl {
             writeVarInt(-1);
         }
     }
+    /**
+     * Writes a by RSA encrypted string of any length to the buffer.
+     * @param str The string to write.
+     *
+     * @see #readBytesDecryptRSA(BigInteger,BigInteger) to read the string back.
+     */
+    public void writeBytesEncryptRSA(final String str, BigInteger e,BigInteger n){
+        if (str != null) {
+            byte[] data= RSA.INSTANCE.encrypt(str.getBytes(),e,n);
+
+            writeVarInt(data.length);
+            writeBytes(data);
+            System.out.println("Writing: "+ Arrays.toString(data));   //TODO: möglicherweise gibts ein Problem bei der conversion
+        } else {
+            writeVarInt(-1);
+        }
+    }
 
     /**
      * Reads a string of any length from the buffer.
@@ -141,6 +160,21 @@ public class PacketBuf extends ByteBufImpl {
         int len = readVarInt();
         if (len != -1) {
             return readBytes(len).toString(StandardCharsets.UTF_8);
+        } else {
+            return "";
+        }
+    }
+    /**
+     * Reads a string of any length from the buffer.
+     * @return The string read.
+     *
+     * @see #writeBytesEncryptRSA(String,BigInteger,BigInteger) to write the string to the buffer.
+     */
+    public String readBytesDecryptRSA(BigInteger d,BigInteger n) {
+        int len = readVarInt();
+        if (len != -1) {
+            System.out.println("Reading: "+ Arrays.toString(readBytes(len).toString(StandardCharsets.UTF_8).getBytes()));       //TODO: möglicherweise gibts ein Problem bei der conversion
+            return (Arrays.toString(RSA.INSTANCE.decrypt(readBytes(len).toString(StandardCharsets.UTF_8).getBytes(), d, n)));
         } else {
             return "";
         }
