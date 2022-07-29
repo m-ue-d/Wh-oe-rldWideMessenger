@@ -140,11 +140,11 @@ public class PacketBuf extends ByteBufImpl {
      */
     public void writeBytesEncryptRSA(final String str, BigInteger e,BigInteger n){
         if (str != null) {
-            byte[] data= RSA.INSTANCE.encrypt(str.getBytes(),e,n);
+            final byte[] data= RSA.INSTANCE.encrypt(str.getBytes(),e,n);
 
             writeVarInt(data.length);
             writeBytes(data);
-            System.out.println("Writing: "+ Arrays.toString(data));   //TODO: möglicherweise gibts ein Problem bei der conversion
+            //System.out.println("Writing: "+ Arrays.toString(data));   //TODO: möglicherweise gibts ein Problem bei der conversion
         } else {
             writeVarInt(-1);
         }
@@ -172,11 +172,18 @@ public class PacketBuf extends ByteBufImpl {
      */
     public String readBytesDecryptRSA(BigInteger d,BigInteger n) {
         int len = readVarInt();
+        System.out.println(len);
         if (len != -1) {
-            System.out.println("Reading: "+ Arrays.toString(readBytes(len).toString(StandardCharsets.UTF_8).getBytes()));       //TODO: möglicherweise gibts ein Problem bei der conversion
-            return (Arrays.toString(RSA.INSTANCE.decrypt(readBytes(len).toString(StandardCharsets.UTF_8).getBytes(), d, n)));
+
+            byte[] data= new byte[len];
+
+            readBytes(data);
+
+            //System.out.println("Reading: "+ Arrays.toString(data));
+
+            return new String(RSA.INSTANCE.decrypt(data,d,n));
         } else {
-            return "";
+            return null;
         }
     }
 

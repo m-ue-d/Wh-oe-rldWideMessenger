@@ -15,7 +15,7 @@ object Validator {
 
 	fun isPasswordValid(password: String) : Boolean {
 		return password.matches(Regex(
-			"[a-zA-Z\\d]{8,16}"	//TODO PHOWWWWW PHOW mek betta regex
+			"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@\$%^&*-]).{8,}\$"
 		))
 	}
 
