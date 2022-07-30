@@ -7,6 +7,7 @@ import spg.shared.network.s2c.*;
 import spg.shared.network.s2c.listener.ClientAuthListener;
 import spg.shared.network.s2c.listener.ClientChatListener;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

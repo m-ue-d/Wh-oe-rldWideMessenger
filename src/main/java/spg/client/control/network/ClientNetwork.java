@@ -82,12 +82,9 @@ public final class ClientNetwork {
             return;
         }
 
-        // shared communication key
-        symmetricKey = AES.INSTANCE.genKey();
-
         connection.send(
             new LoginC2SPacket(
-                address, password, symmetricKey, serverPublicKey, serverModulus
+                address, password, serverPublicKey, serverModulus
             )
         );
     }

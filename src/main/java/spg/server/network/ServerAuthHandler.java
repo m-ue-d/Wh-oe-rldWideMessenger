@@ -23,6 +23,7 @@ public class ServerAuthHandler implements ServerAuthListener {
 
     @Override
     public void onLogin(LoginC2SPacket buf) {
+        buf.decrypt(ServerNetwork.INSTANCE.getServerKey().getPrivateKey(),ServerNetwork.INSTANCE.getServerKey().getModulus());//decrypts packet
         String email = buf.getEmail();
         String password = buf.getPassword();
 

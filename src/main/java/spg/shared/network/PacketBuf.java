@@ -136,7 +136,7 @@ public class PacketBuf extends ByteBufImpl {
      * Writes a by RSA encrypted string of any length to the buffer.
      * @param str The string to write.
      *
-     * @see #readBytesDecryptRSA(BigInteger,BigInteger) to read the string back.
+     * @see #readBytes() to read the String back (as raw Data).
      */
     public void writeBytesEncryptRSA(final String str, BigInteger e,BigInteger n){
         if (str != null) {
@@ -144,7 +144,6 @@ public class PacketBuf extends ByteBufImpl {
 
             writeVarInt(data.length);
             writeBytes(data);
-            //System.out.println("Writing: "+ Arrays.toString(data));   //TODO: möglicherweise gibts ein Problem bei der conversion
         } else {
             writeVarInt(-1);
         }
@@ -165,23 +164,20 @@ public class PacketBuf extends ByteBufImpl {
         }
     }
     /**
-     * Reads a string of any length from the buffer.
-     * @return The string read.
+     * Reads an encrypted String of any length from the buffer.
+     * @return The data read.
      *
      * @see #writeBytesEncryptRSA(String,BigInteger,BigInteger) to write the string to the buffer.
      */
-    public String readBytesDecryptRSA(BigInteger d,BigInteger n) {
+    public byte[] readBytes() {
         int len = readVarInt();
-        System.out.println(len);
         if (len != -1) {
 
             byte[] data= new byte[len];
 
             readBytes(data);
 
-            //System.out.println("Reading: "+ Arrays.toString(data));
-
-            return new String(RSA.INSTANCE.decrypt(data,d,n));
+            return data;
         } else {
             return null;
         }
