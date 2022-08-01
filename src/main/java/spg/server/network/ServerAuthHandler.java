@@ -66,6 +66,7 @@ public class ServerAuthHandler implements ServerAuthListener {
 
     @Override
     public void onSignup(SignupC2SPacket buf) {
+        buf.decrypt(ServerNetwork.INSTANCE.getServerKey().getPrivateKey(),ServerNetwork.INSTANCE.getServerKey().getModulus());//decrypts packet
         String uname = buf.getUsername();
         String email = buf.getEmail();
         String password = buf.getPassword();
@@ -108,6 +109,7 @@ public class ServerAuthHandler implements ServerAuthListener {
 
     @Override
     public void onReset(ResetC2SPacket buf) {
+        buf.decrypt(ServerNetwork.INSTANCE.getServerKey().getPrivateKey(),ServerNetwork.INSTANCE.getServerKey().getModulus());//decrypts packet
         String email = buf.getEmail();
         String newPassword = buf.getNewPassword();
 
@@ -154,6 +156,7 @@ public class ServerAuthHandler implements ServerAuthListener {
     @Override
     public void onVerification(VerificationC2SPacket buf) {
         if (connection.getVerificationCode() != null) {
+            buf.decrypt(ServerNetwork.INSTANCE.getServerKey().getPrivateKey(),ServerNetwork.INSTANCE.getServerKey().getModulus());//decrypts packet
             String verificationCode = buf.getVerificationCode();
             if (connection.getVerificationCode().equals(verificationCode)) {
                 System.out.println("Verification successful");

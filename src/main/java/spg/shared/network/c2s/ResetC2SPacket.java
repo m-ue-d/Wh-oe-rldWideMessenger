@@ -3,28 +3,46 @@ package spg.shared.network.c2s;
 import spg.shared.network.c2s.listener.ServerAuthListener;
 import spg.shared.network.Packet;
 import spg.shared.network.PacketBuf;
+import spg.shared.security.RSA;
+
+import java.math.BigInteger;
 
 /**
  * A packet sent by the client to the server to reset their password.
  */
 public final class ResetC2SPacket implements Packet<ServerAuthListener> {
-    private final String email;
-    private final String newPassword;
+    private byte[] email;
+    private byte[] newPassword;
 
-    public ResetC2SPacket(String email, String newPassword) {
-        this.email = email;
-        this.newPassword = newPassword;
+    private final BigInteger publicKey;
+    private final BigInteger modulus;
+
+    public ResetC2SPacket(String email, String newPassword, BigInteger publicKey, BigInteger modulus) {
+        this.email = email.getBytes();
+        this.newPassword = newPassword.getBytes();
+
+        this.publicKey = publicKey;
+        this.modulus = modulus;
     }
 
     public ResetC2SPacket(PacketBuf buf) {
-        this.email = buf.readString();
-        this.newPassword = buf.readString();
+        this.email = buf.readBytes();
+        this.newPassword = buf.readBytes();
+
+        // null, because the server knows its keys
+        this.publicKey=null;
+        this.modulus=null;
     }
 
     @Override
     public void write(PacketBuf buf) {
-        buf.writeString(email);
-        buf.writeString(newPassword);
+        buf.writeBytesEncryptRSA(new String(email),publicKey,modulus);
+        buf.writeBytesEncryptRSA(new String(newPassword),publicKey,modulus);
+    }
+
+    public void decrypt(BigInteger privateKey, BigInteger modulus){
+        this.email= RSA.INSTANCE.decrypt(this.email,privateKey,modulus);
+        this.newPassword= RSA.INSTANCE.decrypt(this.newPassword,privateKey,modulus);
     }
 
     @Override
@@ -33,10 +51,10 @@ public final class ResetC2SPacket implements Packet<ServerAuthListener> {
     }
 
     public String getEmail() {
-        return email;
+        return new String(this.email);
     }
 
     public String getNewPassword() {
-        return newPassword;
+        return new String(this.newPassword);
     }
 }

@@ -63,7 +63,7 @@ public final class ClientNetwork {
 
         connection.send(
             new SignupC2SPacket(
-                username, address, password
+                username, address, password, serverPublicKey, serverModulus
             )
         );
     }
@@ -104,7 +104,7 @@ public final class ClientNetwork {
         }
 
         connection.send(
-            new ResetC2SPacket(address, newPassword)
+            new ResetC2SPacket(address, newPassword, serverPublicKey, serverModulus)
         );
     }
 
@@ -117,7 +117,7 @@ public final class ClientNetwork {
         System.out.println("Verifying Account with code: " + verificationCode + "...");
 
         connection.send(
-            new VerificationC2SPacket(verificationCode)
+            new VerificationC2SPacket(verificationCode, serverPublicKey, serverModulus)
         );
     }
 }

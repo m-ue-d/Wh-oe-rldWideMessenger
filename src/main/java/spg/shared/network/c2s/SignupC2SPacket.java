@@ -3,32 +3,51 @@ package spg.shared.network.c2s;
 import spg.shared.network.c2s.listener.ServerAuthListener;
 import spg.shared.network.Packet;
 import spg.shared.network.PacketBuf;
+import spg.shared.security.RSA;
+
+import java.math.BigInteger;
 
 /**
  * A packet sent by the client to the server to signup on the platform.
  */
 public final class SignupC2SPacket implements Packet<ServerAuthListener> {
-    private final String username;
-    private final String email;
-    private final String password;
+    private byte[] username;
+    private byte[] email;
+    private byte[] password;
 
-    public SignupC2SPacket(String username, String email, String password) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
+    private final BigInteger publicKey;
+    private final BigInteger modulus;
+
+    public SignupC2SPacket(String username, String email, String password, BigInteger publicKey, BigInteger modulus) {
+        this.username = username.getBytes();
+        this.email = email.getBytes();
+        this.password = password.getBytes();
+
+        this.publicKey = publicKey;
+        this.modulus = modulus;
     }
 
     public SignupC2SPacket(PacketBuf buf) {
-        this.username = buf.readString();
-        this.email = buf.readString();
-        this.password = buf.readString();
+        this.username = buf.readBytes();
+        this.email = buf.readBytes();
+        this.password = buf.readBytes();
+
+        // null, because the server knows its keys
+        this.publicKey=null;
+        this.modulus=null;
+    }
+
+    public void decrypt(BigInteger privateKey, BigInteger modulus){
+        this.email= RSA.INSTANCE.decrypt(this.email,privateKey,modulus);
+        this.password= RSA.INSTANCE.decrypt(this.password,privateKey,modulus);
+        this.username= RSA.INSTANCE.decrypt(this.username,privateKey,modulus);
     }
 
     @Override
     public void write(PacketBuf buf) {
-        buf.writeString(username);
-        buf.writeString(email);
-        buf.writeString(password);
+        buf.writeBytesEncryptRSA(new String(username),publicKey,modulus);
+        buf.writeBytesEncryptRSA(new String(email),publicKey,modulus);
+        buf.writeBytesEncryptRSA(new String(password),publicKey,modulus);
     }
 
     @Override
@@ -37,14 +56,14 @@ public final class SignupC2SPacket implements Packet<ServerAuthListener> {
     }
 
     public String getUsername() {
-        return username;
+        return new String(this.username);
     }
 
     public String getEmail() {
-        return email;
+        return new String(this.email);
     }
 
     public String getPassword() {
-        return password;
+        return new String(this.password);
     }
 }

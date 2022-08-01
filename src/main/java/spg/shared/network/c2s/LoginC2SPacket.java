@@ -28,7 +28,7 @@ public class LoginC2SPacket implements Packet<ServerAuthListener> {
         this.email= buf.readBytes();
         this.password = buf.readBytes();
 
-        // Null, weil der server seine eigenen keys eh kennt
+        // null, because the server knows its keys
         this.publicKey = null;
         this.modulus = null;
     }
