@@ -3,6 +3,8 @@ package spg.client.view
 import javafx.animation.FadeTransition
 import javafx.animation.ScaleTransition
 import javafx.beans.binding.Bindings
+import javafx.beans.value.ChangeListener
+import javafx.beans.value.ObservableValue
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.Node
@@ -46,6 +48,11 @@ class WelcomeView : StackPane() {
 
 	class WelcomePane : VBox() {
 		init {
+
+			val tfIP : TextField = TextField("Server IP").apply {
+				this.alignment = Pos.CENTER
+			}
+
 			this.padding = Insets(30.0)
 			this.spacing = 20.0
 			this.backgroundProperty().bind(
@@ -55,7 +62,7 @@ class WelcomeView : StackPane() {
 			)
 
 			this.children.addAll(
-				FontManager.boldLabel("Welcome to Whörld Wide Messenger!", 26.0),
+				FontManager.boldLabel("Welcome to Heast Messenger!", 26.0),
 
 				FontManager.regularLabel("The messenger with revolutionary technology", 16.0).apply {
 					this.opacity = 0.5
@@ -69,8 +76,11 @@ class WelcomeView : StackPane() {
 					Button("Log in", Color.web("#ECF0FF"), Image(
 						"/spg/client/images/settings/login.png"
 					)) {
-						App.resize(650.0)
-						setPane(LoginPane())
+						if(tfIP.text.matches(Regex("(\\b25[0-5]|\\b2[0-4][0-9]|\\b[01]?[0-9][0-9]?)(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}"))){	//check if an ip is present
+							//TODO: add ip to client class
+							App.resize(650.0)
+							setPane(LoginPane())
+						}
 					}.apply {
 						this.alignment = Pos.CENTER
 					},
@@ -78,11 +88,17 @@ class WelcomeView : StackPane() {
 					Button("Sign up", Color.web("#B8FFB7"), Image(
 						"/spg/client/images/settings/signup.png"
 					)) {
-						App.resize(650.0)
-						setPane(SignupPane())
+						if(tfIP.text.matches(Regex("(\\b25[0-5]|\\b2[0-4][0-9]|\\b[01]?[0-9][0-9]?)(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}"))) { //check if an ip is present
+							//TODO: add ip to client class
+							App.resize(650.0)
+							setPane(SignupPane())
+						}
 					}.apply {
 						this.alignment = Pos.CENTER
-					}
+					},
+
+					tfIP	//the text-field for the server-ip
+
 				).apply {
 					this.padding = Insets(30.0, 50.0, 30.0, 50.0)
 					this.spacing = 22.0

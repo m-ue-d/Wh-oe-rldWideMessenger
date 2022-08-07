@@ -3,6 +3,7 @@ package spg.client
 import javafx.application.Application
 import javafx.event.EventHandler
 import javafx.scene.Scene
+import javafx.scene.image.Image
 import javafx.stage.Stage
 import spg.client.control.network.ClientNetwork
 import spg.client.model.Settings
@@ -27,7 +28,7 @@ object ClientGui {
 
 class App : Application() {
 	companion object {
-		lateinit var stage: Stage
+		private lateinit var stage: Stage
 
 		fun resize(to: Double) {
 			val window = stage.scene.window
@@ -64,6 +65,10 @@ class App : Application() {
 	}
 
 	override fun start(s: Stage) {
+		s.apply {
+			this.icons.add(Image("/spg/client/images/logo/HummelLogoCircle.png"))
+		}
+
 		Settings.account.addListener { _, _, newValue ->
 			when (newValue) {
 				null -> {

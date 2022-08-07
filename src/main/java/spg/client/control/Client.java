@@ -31,7 +31,7 @@ public class Client {
 			: 8080;
 
 		ClientGui.INSTANCE.initialize();
-		new Client(host, port).start();
+		new Client(host, port).start();	//TODO: start client after ip is present (-> after welcomeView)
 	}
 
 	public Client(String host, int port) {
