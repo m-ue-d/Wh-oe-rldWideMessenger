@@ -8,9 +8,7 @@ Whörld Wide Messenger is a community-driven messenger service with latest secur
 
 ### 🎯 Our mission 
 
-We want to have the benefits of quickly writing a message to a relative, but also having a fun place to hang out with your gaming-friends. Whörld Wide Messenger is not built to focus on one specific group of people, but rather being a place for everyone to connect with each other. Because of that, high security is very important to us hence we use latest technology to keep your account and 
-
-messages safe.
+We want to have the benefits of quickly writing a message to a relative, but also having a fun place to hang out with your gaming-friends. Whörld Wide Messenger is not built to focus on one specific group of people, but rather being a place for everyone to connect with each other. Because of that, high security is very important to us hence we use latest technology to keep your account and messages safe.
 
 Whörld Wide Messenger is available on many social media platforms such as Reddit, Twitter or even straight inside our platform for you to have a way to directly communicate with us. We are always open for changes and improvements, and if enough people vote for something they want to get changed, we will do our best to fulfill these wishes.
 
@@ -47,11 +45,11 @@ Whörld Wide Messenger has still lots of thing to come in the near future and wi
 * 💬 Basic messenger features (accounts, friends, direct messaging, servers, etc...)
 * ⚖ Server permission System with roles for different groups of people
 * 🚪 Client sided gateway server customization
-*	🔥 Server bound application interface (api) for getting server members and statistics; can be changed by preference.
-*	📢 Voice channels (with noise filtering algorithms, etc...)
-*	🖌 Better interface customization (either through the settings panel or configuration files)
-*	🖥 Server sided user interface for customization and monitoring.
-*	🌐 Server sided local web socket for third party monitoring
+* 🔥 Server bound application interface (api) for getting server members and statistics; can be changed by preference.
+* 📢 Voice channels (with noise filtering algorithms, etc...)
+* 🖌 Better interface customization (either through the settings panel or configuration files)
+* 🖥 Server sided user interface for customization and monitoring.
+* 🌐 Server sided local web socket for third party monitoring
 
 <h1 align=center>Insider - An in-depth look</h1>
 
@@ -95,9 +93,7 @@ Custom servers allow you to change the behavior of sending emails to server memb
 
 ### 0.3.2 MySQL database
 <hr>
-Just like the authentication server, each custom server is equipped with its own MySQL database instance. There, all members of the server are stored with their respective data (permissions, nickname, auth-key, etc...). The database is forced to be used and has to follow a strict pattern, 
-
-otherwise the server becomes unusable.
+Just like the authentication server, each custom server is equipped with its own MySQL database instance. There, all members of the server are stored with their respective data (permissions, nickname, auth-key, etc...). The database is forced to be used and has to follow a strict pattern, otherwise the server becomes unusable.
 
 ### 0.4 Authentication server
 <hr>
@@ -109,6 +105,4 @@ To understand how messages are transmitted from the client to the server and vic
 
 ### 1.1 Server side implementation
 <hr>
-When the server starts, several things get initialized, including a basic Netty ServerBootstrap. Most of the stuff there is just boilerplate code except for the 
-
-child handler. As seen in the code snippet below, a new client connection is created for each user connecting to the server. This object serves as a "shared communication layer" between the client and the server. It is added to the pipeline. Don't mind the packet encoder and decoder, these will get important later.
+When the server starts, several things get initialized, including a basic Netty ServerBootstrap. Most of the stuff there is just boilerplate code except for the child handler. As seen in the code snippet below, a new client connection is created for each user connecting to the server. This object serves as a "shared communication layer" between the client and the server. It is added to the pipeline. Don't mind the packet encoder and decoder, these will get important later.
