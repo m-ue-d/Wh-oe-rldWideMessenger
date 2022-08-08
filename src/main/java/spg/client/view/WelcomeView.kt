@@ -20,6 +20,7 @@ import spg.client.view.template.TextField
 import spg.client.view.utility.FlexExpander
 import spg.client.view.utility.FlexItem
 import spg.client.view.utility.FontManager
+import spg.shared.utility.Validator
 
 class WelcomeView : StackPane() {
 	companion object {
@@ -74,7 +75,7 @@ class WelcomeView : StackPane() {
 					Button("Log in", Color.web("#ECF0FF"), Image(
 						"/spg/client/images/settings/login.png"
 					)) {
-						if(tfIP.text.matches(Regex("(\\b25[0-5]|\\b2[0-4][0-9]|\\b[01]?[0-9][0-9]?)(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}"))){	//check if an ip is present TODO: regex into validator
+						if(Validator.isIPValid(tfIP.text)){	//check if an ip is present
 
 							App.resize(650.0)
 							setPane(LoginPane())
@@ -86,7 +87,7 @@ class WelcomeView : StackPane() {
 					Button("Sign up", Color.web("#B8FFB7"), Image(
 						"/spg/client/images/settings/signup.png"
 					)) {
-						if(tfIP.text.matches(Regex("(\\b25[0-5]|\\b2[0-4][0-9]|\\b[01]?[0-9][0-9]?)(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}"))) { //check if an ip is present
+						if(Validator.isIPValid(tfIP.text)) { //check if an ip is present
 
 							App.resize(650.0)
 							setPane(SignupPane())
