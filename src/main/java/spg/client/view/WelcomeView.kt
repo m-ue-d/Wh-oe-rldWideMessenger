@@ -49,9 +49,7 @@ class WelcomeView : StackPane() {
 	class WelcomePane : VBox() {
 		init {
 
-			val tfIP : TextField = TextField("Server IP").apply {
-				this.alignment = Pos.CENTER
-			}
+			lateinit var tfIP : TextField
 
 			this.padding = Insets(30.0)
 			this.spacing = 20.0
@@ -76,8 +74,8 @@ class WelcomeView : StackPane() {
 					Button("Log in", Color.web("#ECF0FF"), Image(
 						"/spg/client/images/settings/login.png"
 					)) {
-						if(tfIP.text.matches(Regex("(\\b25[0-5]|\\b2[0-4][0-9]|\\b[01]?[0-9][0-9]?)(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}"))){	//check if an ip is present
-							//TODO: add ip to client class
+						if(tfIP.text.matches(Regex("(\\b25[0-5]|\\b2[0-4][0-9]|\\b[01]?[0-9][0-9]?)(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}"))){	//check if an ip is present TODO: regex into validator
+
 							App.resize(650.0)
 							setPane(LoginPane())
 						}
@@ -89,7 +87,7 @@ class WelcomeView : StackPane() {
 						"/spg/client/images/settings/signup.png"
 					)) {
 						if(tfIP.text.matches(Regex("(\\b25[0-5]|\\b2[0-4][0-9]|\\b[01]?[0-9][0-9]?)(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}"))) { //check if an ip is present
-							//TODO: add ip to client class
+
 							App.resize(650.0)
 							setPane(SignupPane())
 						}
@@ -97,7 +95,10 @@ class WelcomeView : StackPane() {
 						this.alignment = Pos.CENTER
 					},
 
-					tfIP	//the text-field for the server-ip
+						TextField("Server IP").apply {
+							this.alignment = Pos.CENTER
+							tfIP= this
+						}	//the text-field for the server-ip
 
 				).apply {
 					this.padding = Insets(30.0, 50.0, 30.0, 50.0)

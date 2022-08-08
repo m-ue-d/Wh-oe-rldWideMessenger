@@ -1,9 +1,16 @@
 package spg.client.control.network;
 
-import io.netty.channel.Channel;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import spg.server.auth.Email;
 import spg.shared.User;
 import spg.shared.network.ClientConnection;
+import spg.shared.network.NetworkSide;
+import spg.shared.network.PacketDecoder;
+import spg.shared.network.PacketEncoder;
 import spg.shared.network.c2s.*;
 import spg.shared.security.AES;
 import spg.shared.utility.Validator;
@@ -26,9 +33,11 @@ public final class ClientNetwork {
 
     public void shutdown() {
         System.out.println("Shutting down client network...");
-        Channel channel = connection.getChannel();
-        if (channel != null) {
-            channel.close().syncUninterruptibly();
+        if (this.connection != null) {
+            Channel channel = connection.getChannel();
+            if (channel != null) {
+                channel.close().syncUninterruptibly();
+            }
         }
     }
 

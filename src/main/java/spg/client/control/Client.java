@@ -21,6 +21,8 @@ public class Client {
 	private final String host;
 	private final int port;
 
+	private Bootstrap bootstrap;
+
 	public static void main(String... args) {
 		String host = args.length > 0
 			? args[0]
@@ -31,7 +33,9 @@ public class Client {
 			: 8080;
 
 		ClientGui.INSTANCE.initialize();
-		new Client(host, port).start();	//TODO: start client after ip is present (-> after welcomeView)
+		Client client= new Client(host, port);
+		client.bootstrap= new Bootstrap();
+		client.start();	//TODO: start client after ip is present (-> after welcomeView)
 	}
 
 	public Client(String host, int port) {
@@ -43,8 +47,7 @@ public class Client {
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 		ClientConnection connection = new ClientConnection(NetworkSide.CLIENT);
 		try{
-			new Bootstrap()
-				.group(workerGroup)
+				this.bootstrap.group(workerGroup)
 				.channel(NioSocketChannel.class)
 				.option(ChannelOption.SO_KEEPALIVE, true)
 				.handler(new ChannelInitializer<SocketChannel>() {
