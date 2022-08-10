@@ -23,15 +23,12 @@ public class ClientAuthHandler implements ClientAuthListener {
                 Platform.runLater(() ->
                     Settings.account.set(buf.getUser())
                 );
-                connection.setListener(
-                    new ClientChatHandler(connection)
-                );
             }
 
             case CODE_SENT -> {
                 System.out.println("Server: Code sent!");
-                Platform.runLater(() -> WelcomeView.Companion.addPane(
-                    new WelcomeView.VerificationPane()
+                Platform.runLater(() -> WelcomeView.INSTANCE.addPane(
+                    WelcomeView.VerificationPane.INSTANCE
                 ));
             }
 
@@ -50,15 +47,15 @@ public class ClientAuthHandler implements ClientAuthListener {
         switch (buf.getStatus()) {
             case OK -> {
                 System.out.println("Server: Signed up!");
-                Platform.runLater(() -> WelcomeView.Companion.setPane(
-                    new WelcomeView.LoginPane()
+                Platform.runLater(() -> WelcomeView.INSTANCE.setPane(
+                    WelcomeView.LoginPane.INSTANCE
                 ));
             }
 
             case CODE_SENT -> {
                 System.out.println("Server: Code sent!");
-                Platform.runLater(() -> WelcomeView.Companion.addPane(
-                    new WelcomeView.VerificationPane()
+                Platform.runLater(() -> WelcomeView.INSTANCE.addPane(
+                    WelcomeView.VerificationPane.INSTANCE
                 ));
             }
 
@@ -77,15 +74,15 @@ public class ClientAuthHandler implements ClientAuthListener {
         switch (buf.getStatus()) {
             case OK -> {
                 System.out.println("Server: Password reset!");
-                Platform.runLater(() -> WelcomeView.Companion.setPane(
-                    new WelcomeView.LoginPane()
+                Platform.runLater(() -> WelcomeView.INSTANCE.setPane(
+                    WelcomeView.LoginPane.INSTANCE
                 ));
             }
 
             case CODE_SENT -> {
                 System.out.println("Server: Code sent!");
-                Platform.runLater(() -> WelcomeView.Companion.addPane(
-                    new WelcomeView.VerificationPane()
+                Platform.runLater(() -> WelcomeView.INSTANCE.addPane(
+                    WelcomeView.VerificationPane.INSTANCE
                 ));
             }
 
@@ -100,7 +97,7 @@ public class ClientAuthHandler implements ClientAuthListener {
     }
 
     @Override
-    public void onServerPublicKeyResponse(ServerPublicKeyResponseS2CPacket buf) {
+    public void onServerPublicKeyResponse(ServerKeyResponseS2CPacket buf) {
         System.out.println("Server: Public key + Modulus received!");
         ClientNetwork.INSTANCE.serverPublicKey = buf.getPublicKey();
         ClientNetwork.INSTANCE.serverModulus = buf.getModulus();

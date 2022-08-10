@@ -1,7 +1,5 @@
 package spg.server.network;
 
-import spg.client.control.network.ClientNetwork;
-import spg.server.auth.Email;
 import spg.server.database.Database;
 import spg.shared.User;
 import spg.shared.network.c2s.*;
@@ -9,7 +7,7 @@ import spg.shared.network.c2s.listener.ServerAuthListener;
 import spg.shared.network.ClientConnection;
 import spg.shared.network.s2c.LoginResponseS2CPacket;
 import spg.shared.network.s2c.ResetResponseS2CPacket;
-import spg.shared.network.s2c.ServerPublicKeyResponseS2CPacket;
+import spg.shared.network.s2c.ServerKeyResponseS2CPacket;
 import spg.shared.network.s2c.SignupResponseS2CPacket;
 import spg.shared.utility.Validator;
 
@@ -27,7 +25,9 @@ public class ServerAuthHandler implements ServerAuthListener {
         String email = buf.getEmail();
         String password = buf.getPassword();
 
-        if (!Validator.INSTANCE.isEmailValid(email) || !Validator.INSTANCE.isPasswordValid(password)) {
+        if (!Validator.INSTANCE.isEmailValid(email) ||
+            !Validator.INSTANCE.isPasswordValid(password)
+        ) {
             connection.send(new LoginResponseS2CPacket(
                 LoginResponseS2CPacket.Status.INVALID_CREDENTIALS, null
             ));
@@ -42,7 +42,7 @@ public class ServerAuthHandler implements ServerAuthListener {
             return;
         }
 
-        ClientNetwork.INSTANCE.sendVerificationCode(
+        ServerNetwork.INSTANCE.sendVerificationCode(
             connection, email, () -> connection.send(new LoginResponseS2CPacket(
                 LoginResponseS2CPacket.Status.CODE_SENT, null
             )), () -> {
@@ -52,9 +52,6 @@ public class ServerAuthHandler implements ServerAuthListener {
                     connection.send(new LoginResponseS2CPacket(
                         LoginResponseS2CPacket.Status.OK, user
                     ));
-                    connection.setListener(
-                        new ServerChatHandler(connection)
-                    );
                 } else {
                     connection.send(new LoginResponseS2CPacket(
                         LoginResponseS2CPacket.Status.INVALID_CREDENTIALS, null
@@ -89,7 +86,7 @@ public class ServerAuthHandler implements ServerAuthListener {
             return;
         }
 
-        ClientNetwork.INSTANCE.sendVerificationCode(
+        ServerNetwork.INSTANCE.sendVerificationCode(
             connection, email, () -> connection.send(new SignupResponseS2CPacket(
                 SignupResponseS2CPacket.Status.CODE_SENT
             )), () -> {
@@ -113,14 +110,9 @@ public class ServerAuthHandler implements ServerAuthListener {
         String email = buf.getEmail();
         String newPassword = buf.getNewPassword();
 
-        if (!Validator.INSTANCE.isEmailValid(email)) {
-            connection.send(new ResetResponseS2CPacket(
-                ResetResponseS2CPacket.Status.INVALID_CREDENTIALS
-            ));
-            return;
-        }
-
-        if (!Validator.INSTANCE.isPasswordValid(newPassword)) {
+        if (!Validator.INSTANCE.isEmailValid(email) ||
+            !Validator.INSTANCE.isPasswordValid(newPassword)
+        ) {
             connection.send(new ResetResponseS2CPacket(
                 ResetResponseS2CPacket.Status.INVALID_CREDENTIALS
             ));
@@ -135,7 +127,7 @@ public class ServerAuthHandler implements ServerAuthListener {
             return;
         }
 
-        ClientNetwork.INSTANCE.sendVerificationCode(
+        ServerNetwork.INSTANCE.sendVerificationCode(
             connection, email, () -> connection.send(new ResetResponseS2CPacket(
                 ResetResponseS2CPacket.Status.CODE_SENT
             )), () -> {
@@ -154,23 +146,33 @@ public class ServerAuthHandler implements ServerAuthListener {
     }
 
     @Override
+    public void onLogout(LogoutC2SPacket buf) {
+        if(ServerNetwork.INSTANCE.removeConnection(connection)) {
+            System.out.println("Client logged out, reason: " + buf.getReason());
+        } else {
+            System.err.println("Client logout failed.");
+        }
+    }
+
+    @Override
     public void onVerification(VerificationC2SPacket buf) {
         if (connection.getVerificationCode() != null) {
-            buf.decrypt(ServerNetwork.INSTANCE.getServerKey().getPrivateKey(),ServerNetwork.INSTANCE.getServerKey().getModulus());//decrypts packet
+            buf.decrypt(ServerNetwork.INSTANCE.getServerKey().getPrivateKey(), ServerNetwork.INSTANCE.getServerKey().getModulus()); //decrypts packet
             String verificationCode = buf.getVerificationCode();
             if (connection.getVerificationCode().equals(verificationCode)) {
                 System.out.println("Verification successful");
                 connection.onVerificationCode();
             } else {
-                System.out.println("Verification failed");
+                System.err.println("Verification failed");
             }
         }
     }
 
     @Override
-    public void onServerPublicKeyRequest(ServerPublicKeyC2SPacket buf) {
+    public void onServerKeyRequest(ServerKeyC2SPacket buf) {
+        System.out.println("Requesting server key");
         connection.send(
-            new ServerPublicKeyResponseS2CPacket(
+            new ServerKeyResponseS2CPacket(
                 ServerNetwork.INSTANCE.getServerKey().getPublicKey(),
                 ServerNetwork.INSTANCE.getServerKey().getModulus()
             )

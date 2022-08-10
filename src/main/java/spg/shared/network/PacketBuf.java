@@ -2,10 +2,6 @@ package spg.shared.network;
 
 import io.netty.buffer.ByteBuf;
 import spg.shared.User;
-import spg.shared.chatting.ChatBase;
-import spg.shared.chatting.ChatFile;
-import spg.shared.chatting.ChatImage;
-import spg.shared.chatting.ChatText;
 import spg.shared.security.AES;
 import spg.shared.security.RSA;
 import spg.shared.utility.ByteBufImpl;
@@ -351,41 +347,5 @@ public class PacketBuf extends ByteBufImpl {
         }  else {
             return null;
         }
-    }
-
-    /**
-     * Writes an arbitrary message to the buffer.
-     * @param message The message to write.
-     *
-     * @see #readChatText() to read a text back.
-     * @see #readChatImage() to read an image back.
-     * @see #readChatFile() to read a file back.
-     */
-    public <T extends ChatBase<?>> void writeChatMessage(final T message) {
-        writeString(message.toString());
-    }
-
-    /**
-     * Reads a ChatText from the buffer.
-     * @return The text read.
-     */
-    public ChatText readChatText() {
-        return new ChatText(readString());
-    }
-
-    /**
-     * Reads a ChatImage from the buffer.
-     * @return The image read.
-     */
-    public ChatImage readChatImage() {
-        return new ChatImage(readString());
-    }
-
-    /**
-     * Reads a ChatFile from the buffer.
-     * @return The file read.
-     */
-    public ChatFile readChatFile() {
-        return new ChatFile(readString());
     }
 }

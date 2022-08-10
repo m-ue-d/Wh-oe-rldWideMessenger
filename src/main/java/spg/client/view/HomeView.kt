@@ -14,12 +14,12 @@ import spg.client.view.utility.FontManager
 import java.awt.Desktop
 import java.net.URI
 
-class HomeView : ViewPane() {
+object HomeView : ViewPane() {
 	init {
-		this.center = HomePane()
+		this.center = HomePane
 	}
 
-	class HomePane : HBox() {
+	object HomePane : HBox() {
 		init {
 			this.opacity = 0.3
 			this.children.addAll(

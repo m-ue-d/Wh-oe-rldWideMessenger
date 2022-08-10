@@ -10,5 +10,5 @@ public interface ClientAuthListener extends PacketListener {
 
     void onResetResponse(ResetResponseS2CPacket buf);
 
-    void onServerPublicKeyResponse(ServerPublicKeyResponseS2CPacket buf);
+    void onServerPublicKeyResponse(ServerKeyResponseS2CPacket buf);
 }

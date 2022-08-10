@@ -1,18 +1,18 @@
 package spg.client.control.network;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import spg.server.auth.Email;
-import spg.shared.User;
+import org.jetbrains.annotations.NotNull;
 import spg.shared.network.ClientConnection;
 import spg.shared.network.NetworkSide;
 import spg.shared.network.PacketDecoder;
 import spg.shared.network.PacketEncoder;
 import spg.shared.network.c2s.*;
-import spg.shared.security.AES;
 import spg.shared.utility.Validator;
 
 import java.math.BigInteger;
@@ -25,7 +25,7 @@ public final class ClientNetwork {
     public byte[] symmetricKey;
 
     public BigInteger serverPublicKey;
-    public BigInteger serverModulus;//N
+    public BigInteger serverModulus;
 
     public void initialize() {
         System.out.println("Initializing client network...");
@@ -34,20 +34,14 @@ public final class ClientNetwork {
     public void shutdown() {
         System.out.println("Shutting down client network...");
         if (this.connection != null) {
-            Channel channel = connection.getChannel();
+            connection.send(
+                new LogoutC2SPacket(LogoutC2SPacket.Reason.CLIENT_QUIT)
+            );
+            var channel = connection.getChannel();
             if (channel != null) {
-                channel.close().syncUninterruptibly();
+                channel.close();
             }
         }
-    }
-
-    public void sendVerificationCode(ClientConnection connection, String email, Runnable onCodeSent, Runnable onSuccess) {
-        String verificationCode = Email.INSTANCE.genCode();
-        connection.setVerificationCode(verificationCode);
-        System.out.println("Sending verification code: " + verificationCode);
-        Email.INSTANCE.sendMail(email, verificationCode);
-        onCodeSent.run();
-        connection.setOnVerificationSuccess(onSuccess);
     }
 
     public void signup(String uname, String email, String password) {
@@ -56,17 +50,17 @@ public final class ClientNetwork {
         String address = email.trim();
 
         if (!Validator.INSTANCE.isUnameValid(username)) {
-            System.out.println("Invalid username");
+            System.err.println("Invalid username");
             return;
         }
 
         if (!Validator.INSTANCE.isEmailValid(address)) {
-            System.out.println("Invalid email");
+            System.err.println("Invalid email");
             return;
         }
 
         if (!Validator.INSTANCE.isPasswordValid(password)) {
-            System.out.println("Invalid password");
+            System.err.println("Invalid password");
             return;
         }
 
@@ -82,12 +76,12 @@ public final class ClientNetwork {
         String address = email.trim();
 
         if (!Validator.INSTANCE.isEmailValid(address)) {
-            System.out.println("Invalid email");
+            System.err.println("Invalid email");
             return;
         }
 
         if (!Validator.INSTANCE.isPasswordValid(password)) {
-            System.out.println("Invalid password");
+            System.err.println("Invalid password");
             return;
         }
 
@@ -103,12 +97,12 @@ public final class ClientNetwork {
         String address = email.trim();
 
         if (!Validator.INSTANCE.isEmailValid(address)) {
-            System.out.println("Invalid email");
+            System.err.println("Invalid email");
             return;
         }
 
         if (!Validator.INSTANCE.isPasswordValid(newPassword)) {
-            System.out.println("Invalid password");
+            System.err.println("Invalid password");
             return;
         }
 
@@ -117,9 +111,14 @@ public final class ClientNetwork {
         );
     }
 
+    public void logout() {
+        System.out.println("Logging out...");
+        connection.send(new LogoutC2SPacket(LogoutC2SPacket.Reason.LOGOUT));
+    }
+
     public void verify(String verificationCode) {
         if (!Validator.INSTANCE.isVerificationCodeValid(verificationCode)) {
-            System.out.println("Invalid verification code");
+            System.err.println("Invalid verification code");
             return;
         }
 
@@ -128,5 +127,12 @@ public final class ClientNetwork {
         connection.send(
             new VerificationC2SPacket(verificationCode, serverPublicKey, serverModulus)
         );
+    }
+
+    public void tryAddServer(String host, int port) {
+        if (!Validator.INSTANCE.isIpValid(host) || !Validator.INSTANCE.isPortValid(port)) {
+            System.err.println("Invalid server address");
+            return;
+        }
     }
 }

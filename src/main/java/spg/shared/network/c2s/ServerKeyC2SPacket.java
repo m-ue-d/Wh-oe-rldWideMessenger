@@ -5,15 +5,15 @@ import spg.shared.network.PacketBuf;
 import spg.shared.network.c2s.listener.ServerAuthListener;
 
 /**
- * A packet sent by the client to the server to reset their password.
+ * A packet sent by the client to the server to request its public key.
  */
-public final class ServerPublicKeyC2SPacket implements Packet<ServerAuthListener> {
+public final class ServerKeyC2SPacket implements Packet<ServerAuthListener> {
 
-    public ServerPublicKeyC2SPacket() {
+    public ServerKeyC2SPacket() {
 
     }
 
-    public ServerPublicKeyC2SPacket(PacketBuf buf) {
+    public ServerKeyC2SPacket(PacketBuf buf) {
 
     }
 
@@ -24,6 +24,6 @@ public final class ServerPublicKeyC2SPacket implements Packet<ServerAuthListener
 
     @Override
     public void apply(ServerAuthListener listener) {
-        listener.onServerPublicKeyRequest(this);
+        listener.onServerKeyRequest(this);
     }
 }

@@ -7,19 +7,19 @@ import spg.shared.network.s2c.listener.ClientAuthListener;
 import java.math.BigInteger;
 
 /**
- * A packet sent by the client to the server to reset their password.
+ * A packet sent by the server to the client with the public key.
  */
-public final class ServerPublicKeyResponseS2CPacket implements Packet<ClientAuthListener> {
+public final class ServerKeyResponseS2CPacket implements Packet<ClientAuthListener> {
 
     private final BigInteger publicKey;
     private final BigInteger modulus;
 
-    public ServerPublicKeyResponseS2CPacket(BigInteger publicKey, BigInteger modulus) {
+    public ServerKeyResponseS2CPacket(BigInteger publicKey, BigInteger modulus) {
         this.publicKey = publicKey;
         this.modulus = modulus;
     }
 
-    public ServerPublicKeyResponseS2CPacket(PacketBuf buf) {
+    public ServerKeyResponseS2CPacket(PacketBuf buf) {
         this.publicKey = buf.readRSAKey();
         this.modulus = buf.readModulus();
     }

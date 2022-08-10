@@ -1,7 +1,6 @@
 package spg.client.view
 
 import javafx.animation.FadeTransition
-import javafx.animation.Interpolator
 import javafx.animation.RotateTransition
 import javafx.animation.ScaleTransition
 import javafx.beans.binding.Bindings
@@ -18,12 +17,15 @@ import javafx.scene.paint.Color
 import javafx.util.Duration
 import spg.client.model.Current
 import spg.client.model.Settings
+import spg.client.view.sidebar.ServerSidebarView
+import spg.client.view.sidebar.SettingsSidebarView
 import spg.client.view.template.ViewPane
 import spg.client.view.utility.FlexExpander
 import spg.client.view.utility.FlexSpacer
+import spg.client.view.utility.Interpolator
 import java.util.*
 
-class NavigationView : VBox() {
+object NavigationView : VBox() {
 	private val toggleGroup = ToggleGroup()
 	init {
 		this.padding = Insets(10.0, 0.0, 20.0, 0.0)
@@ -32,9 +34,9 @@ class NavigationView : VBox() {
 		this.alignment = Pos.TOP_CENTER
 		this.children.addAll(
 			SidebarButton(
-				Image("/spg/client/images/logo/messenger-hollow.png"), HomeView(), toggleGroup
+				Image("/spg/client/images/logo/messenger-hollow.png"), HomeView, toggleGroup
 			) {
-				MainView.sidebarViewNode.hide()
+				SidebarView.hide()
 				Current.panel.set("Welcome!")
 			}.apply {
 				this.active.set(true)
@@ -45,15 +47,15 @@ class NavigationView : VBox() {
 			),
 
 			SidebarButton(
-				Image("/spg/client/images/menu/messages.png"), ViewPane(), toggleGroup
+				Image("/spg/client/images/menu/messages.png"), ChatView, toggleGroup
 			) {
-				MainView.sidebarViewNode.show()
+				SidebarView.show(ViewPane())
 				Current.panel.set("Direct Messages")
 			},
 			SidebarButton(
 				Image("/spg/client/images/menu/friends.png"), ViewPane(), toggleGroup
 			) {
-				MainView.sidebarViewNode.hide()
+				SidebarView.hide()
 				Current.panel.set("Friends")
 			},
 
@@ -62,15 +64,15 @@ class NavigationView : VBox() {
 			),
 
 			SidebarButton(
-				Image("/spg/client/images/menu/servers.png"), ChatView(), toggleGroup
+				Image("/spg/client/images/menu/servers.png"), ChatView, toggleGroup
 			) {
-				MainView.sidebarViewNode.show()
+				SidebarView.show(ServerSidebarView)
 				Current.panel.set("Servers")
 			},
 			SidebarButton(
 				Image("/spg/client/images/menu/explore.png"), ViewPane(), toggleGroup
 			) {
-				MainView.sidebarViewNode.hide()
+				SidebarView.hide()
 				Current.panel.set("Discover")
 			},
 
@@ -79,9 +81,9 @@ class NavigationView : VBox() {
 			),
 
 			SidebarButton(
-				Image("/spg/client/images/menu/settings.png"), SettingsView(), toggleGroup
+				Image("/spg/client/images/menu/settings.png"), SettingsView, toggleGroup
 			) {
-				MainView.sidebarViewNode.hide()
+				SidebarView.show(SettingsSidebarView, 200.0)
 				Current.panel.set("Settings")
 			},
 		)
@@ -121,15 +123,13 @@ class NavigationView : VBox() {
 			}
 
 			active.addListener { _, _, v ->
-				if (v) {
+				if (v && toggleGroup != null) {
 					FadeTransition().apply {
 						this.node = center
 						this.fromValue = 0.5
 						this.toValue = 1.0
 						this.duration = Duration.seconds(0.4)
-						this.interpolatorProperty().bind(
-							Settings.easeInOutBack
-						)
+						this.interpolator = Interpolator.easeInOutBack
 					}.play()
 					this@SidebarButton.borderProperty().bind(
 						Bindings.createObjectBinding({
@@ -156,9 +156,7 @@ class NavigationView : VBox() {
 						this.fromValue = 1.0
 						this.toValue = 0.5
 						this.duration = Duration.seconds(0.4)
-						this.interpolatorProperty().bind(
-							Settings.easeInOutBack
-						)
+						this.interpolator = Interpolator.easeInOutBack
 					}.play()
 					this@SidebarButton.borderProperty().unbind()
 					this@SidebarButton.border = null
@@ -173,15 +171,13 @@ class NavigationView : VBox() {
 					this.toX = 1.3
 					this.toY = 1.3
 					this.duration = Duration.seconds(0.5)
-					this.interpolatorProperty().bind(
-						Settings.easeInOutBack
-					)
+					this.interpolator = Interpolator.easeInOutBack
 				}.play()
 				RotateTransition().apply {
 					this.node = center
 					this.toAngle = Random().nextDouble() * 20.0 - 10.0
 					this.duration = Duration.seconds(0.3)
-					this.interpolator = Interpolator.EASE_OUT
+					this.interpolator = Interpolator.easeOut
 				}.play()
 			}
 			this.onMouseExited = EventHandler {
@@ -192,20 +188,18 @@ class NavigationView : VBox() {
 					this.toX = 1.0
 					this.toY = 1.0
 					this.duration = Duration.seconds(0.5)
-					this.interpolatorProperty().bind(
-						Settings.easeInOutBack
-					)
+					this.interpolator = Interpolator.easeInOutBack
 				}.play()
 				RotateTransition().apply {
 					this.node = center
 					this.toAngle = 0.0
 					this.duration = Duration.seconds(0.3)
-					this.interpolator = Interpolator.EASE_OUT
+					this.interpolator = Interpolator.easeOut
 				}.play()
 			}
 			this.onMousePressed = EventHandler {
 				if (!active.value) {
-					MainView.setCurrentView(content)
+					MainView.setView(content)
 					onAction?.handle(it)
 				}
 				active.set(true)
@@ -217,9 +211,7 @@ class NavigationView : VBox() {
 					this.toX = 1.0
 					this.toY = 1.0
 					this.duration = Duration.seconds(0.5)
-					this.interpolatorProperty().bind(
-						Settings.easeInOutBack
-					)
+					this.interpolator = Interpolator.easeInOutBack
 				}.play()
 			}
 			this.onMouseReleased = EventHandler {
@@ -230,9 +222,7 @@ class NavigationView : VBox() {
 					this.toX = 1.3
 					this.toY = 1.3
 					this.duration = Duration.seconds(0.5)
-					this.interpolatorProperty().bind(
-						Settings.easeInOutBack
-					)
+					this.interpolator = Interpolator.easeInOutBack
 				}.play()
 			}
 		}

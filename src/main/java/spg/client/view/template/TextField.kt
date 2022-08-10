@@ -10,10 +10,11 @@ import spg.client.model.Settings
 import spg.client.view.utility.ColorUtil
 import spg.client.view.utility.FontManager
 
-class TextField(prompt: String? = null) : javafx.scene.control.TextField() {
+open class TextField(prompt: String? = null) : javafx.scene.control.TextField() {
 	init {
 		this.isFocusTraversable = false
 		this.prefHeight = 40.0
+		this.padding = Insets(10.0)
 		this.alignment = Pos.CENTER_LEFT
 		this.font = FontManager.boldFont(16.0)
 		this.promptText = prompt ?: ""
@@ -36,20 +37,6 @@ class TextField(prompt: String? = null) : javafx.scene.control.TextField() {
 					)
 				)
 			}, Settings.bgPrimary)
-		)
-	}
-
-	fun lighter() {
-		this.backgroundProperty().bind(
-			Bindings.createObjectBinding({
-				return@createObjectBinding Background(
-					BackgroundFill(
-						Settings.bgSecondary.value,
-						CornerRadii(5.0),
-						Insets.EMPTY
-					)
-				)
-			}, Settings.bgSecondary)
 		)
 	}
 }

@@ -12,7 +12,7 @@ import spg.client.model.Current
 import spg.client.view.utility.FlexExpander
 import spg.client.view.utility.FontManager
 
-class MenubarView : HBox() {
+object MenubarView : HBox() {
 	init {
 		this.padding = Insets(10.0, 20.0, 10.0, 20.0)
 		this.spacing = 40.0
@@ -20,7 +20,7 @@ class MenubarView : HBox() {
 		this.alignment = Pos.CENTER_RIGHT
 		this.children.addAll(
 			HBox(
-				FontManager.boldLabel("", 24.0).apply {
+				FontManager.boldLabel(size = 24.0).apply {
 					this.textProperty().bind(Current.panel)
 				},
 				// search bar

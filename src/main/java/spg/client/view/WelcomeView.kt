@@ -12,46 +12,40 @@ import javafx.scene.image.Image
 import javafx.scene.layout.*
 import javafx.scene.paint.Color
 import javafx.util.Duration
-import spg.client.App
 import spg.client.control.network.ClientNetwork
 import spg.client.model.Settings
 import spg.client.view.template.Button
 import spg.client.view.template.TextField
+import spg.client.view.template.specific.LightButton
+import spg.client.view.template.specific.LightTextField
 import spg.client.view.utility.FlexExpander
 import spg.client.view.utility.FlexItem
 import spg.client.view.utility.FontManager
+import spg.client.view.utility.Interpolator
 import spg.shared.utility.Validator
 
-class WelcomeView : StackPane() {
-	companion object {
-		private lateinit var mainPane: StackPane
+object WelcomeView : StackPane() {
+	fun setPane(node: Node) {
+		this.children.clear()
+		this.children.add(node)
+	}
 
-		fun setPane(node: Node) {
-			mainPane.children.clear()
-			addPane(node)
-		}
+	fun addPane(node: Node) {
+		this.children.add(node)
+	}
 
-		fun addPane(node: Node) {
-			mainPane.children.add(node)
-		}
-
-		fun removePane(node: Node) {
-			mainPane.children.remove(node)
-		}
+	fun removePane(node: Node) {
+		this.children.remove(node)
 	}
 
 	init {
-		mainPane = this
 		this.children.addAll(
-			WelcomePane()
+			WelcomePane
 		)
 	}
 
-	class WelcomePane : VBox() {
+	object WelcomePane : VBox() {
 		init {
-
-			lateinit var tfIP : TextField
-
 			this.padding = Insets(30.0)
 			this.spacing = 20.0
 			this.backgroundProperty().bind(
@@ -75,11 +69,8 @@ class WelcomeView : StackPane() {
 					Button("Log in", Color.web("#ECF0FF"), Image(
 						"/spg/client/images/settings/login.png"
 					)) {
-						if(Validator.isIPValid(tfIP.text)){	//check if an ip is present
-
-							App.resize(650.0)
-							setPane(LoginPane())
-						}
+						ClientGui.resize(700.0)
+						setPane(LoginPane)
 					}.apply {
 						this.alignment = Pos.CENTER
 					},
@@ -87,20 +78,11 @@ class WelcomeView : StackPane() {
 					Button("Sign up", Color.web("#B8FFB7"), Image(
 						"/spg/client/images/settings/signup.png"
 					)) {
-						if(Validator.isIPValid(tfIP.text)) { //check if an ip is present
-
-							App.resize(650.0)
-							setPane(SignupPane())
-						}
+						ClientGui.resize(650.0)
+						setPane(SignupPane)
 					}.apply {
 						this.alignment = Pos.CENTER
-					},
-
-						TextField("Server IP").apply {
-							this.alignment = Pos.CENTER
-							tfIP= this
-						}	//the text-field for the server-ip
-
+					}
 				).apply {
 					this.padding = Insets(30.0, 50.0, 30.0, 50.0)
 					this.spacing = 22.0
@@ -109,7 +91,7 @@ class WelcomeView : StackPane() {
 		}
 	}
 
-	class LoginPane : VBox() {
+	object LoginPane : VBox() {
 		private val emailField : TextField
 		private val passwordField : TextField
 		init {
@@ -169,8 +151,8 @@ class WelcomeView : StackPane() {
 					Button("Back", Color.web("#ECF0FF"), Image(
 						"/spg/client/images/misc/back.png"
 					)) {
-						App.resize(450.0)
-						setPane(WelcomePane())
+						ClientGui.resize(450.0)
+						setPane(WelcomePane)
 					}.apply {
 						this.alignment = Pos.CENTER
 					}
@@ -182,7 +164,7 @@ class WelcomeView : StackPane() {
 		}
 	}
 
-	class SignupPane : VBox() {
+	object SignupPane : VBox() {
 		private val usernameField : TextField
 		private val emailField : TextField
 		private val passwordField : TextField
@@ -240,8 +222,8 @@ class WelcomeView : StackPane() {
 					Button("Back", Color.web("#ECF0FF"), Image(
 						"/spg/client/images/misc/back.png"
 					)) {
-						App.resize(450.0)
-						setPane(WelcomePane())
+						ClientGui.resize(450.0)
+						setPane(WelcomePane)
 					}.apply {
 						this.alignment = Pos.CENTER
 					}
@@ -253,7 +235,7 @@ class WelcomeView : StackPane() {
 		}
 	}
 
-	class VerificationPane : VBox() {
+	object VerificationPane : VBox() {
 		private val verificationField : TextField
 
 		init {
@@ -271,9 +253,7 @@ class WelcomeView : StackPane() {
 				this.toX = 1.0
 				this.toY = 1.0
 				this.duration = Duration.seconds(1.0)
-				this.interpolatorProperty().bind(
-					Settings.easeInOutBack
-				)
+				this.interpolator = Interpolator.easeInOutBack
 			}.play()
 
 			this.backgroundProperty().bind(
@@ -311,12 +291,11 @@ class WelcomeView : StackPane() {
 				),
 
 				HBox(
-					TextField("Verification Code").apply {
+					LightTextField("Verification Code").apply {
 						this@VerificationPane.verificationField = this
-						this.lighter()
 					},
 
-					Button(icon = Image(
+					LightButton(icon = Image(
 						"/spg/client/images/misc/done.png"
 					)) {
 						ClientNetwork.INSTANCE.verify(
@@ -324,7 +303,6 @@ class WelcomeView : StackPane() {
 						)
 					}.apply {
 						this.alignment = Pos.CENTER
-						this.lighter()
 					}
 				).apply {
 					this.alignment = Pos.CENTER
@@ -335,15 +313,12 @@ class WelcomeView : StackPane() {
 					vBox = true
 				),
 
-				Button("Back", Color.web("#ECF0FF"), Image(
+				LightButton("Back", Color.web("#ECF0FF"), Image(
 					"/spg/client/images/misc/back.png"
 				)) {
-					WelcomeView.removePane(
-						this@VerificationPane
-					)
+					removePane(this@VerificationPane)
 				}.apply {
 					this.alignment = Pos.CENTER
-					this.lighter()
 				}
 			)
 		}

@@ -15,8 +15,9 @@ import javafx.util.Duration
 import spg.client.model.Settings
 import spg.client.view.utility.AnyTransition
 import spg.client.view.utility.FontManager
+import spg.client.view.utility.HoverTransition
 
-class Button(text: String? = null, color: Color? = null, icon: Image? = null, onAction: EventHandler<MouseEvent>) : HBox() {
+open class Button(text: String? = null, color: Color? = null, icon: Image? = null, onAction: EventHandler<MouseEvent>) : HBox() {
 	init {
 		this.padding = Insets(10.0)
 		this.spacing = 10.0
@@ -55,37 +56,11 @@ class Button(text: String? = null, color: Color? = null, icon: Image? = null, on
 		this.onMouseClicked = onAction
 
 		this.onMouseEntered = EventHandler {
-			TranslateTransition().apply {
-				this.node = this@Button
-				this.fromY = this@Button.translateY
-				this.toY = -3.0
-				this.duration = Duration.seconds(0.1)
-				this.interpolator = Interpolator.EASE_OUT
-			}.play()
+			HoverTransition.onMouseEntered(this@Button)
 		}
 
 		this.onMouseExited = EventHandler {
-			TranslateTransition().apply {
-				this.node = this@Button
-				this.fromY = this@Button.translateY
-				this.toY = 0.0
-				this.duration = Duration.seconds(0.1)
-				this.interpolator = Interpolator.EASE_OUT
-			}.play()
+			HoverTransition.onMouseExited(this@Button)
 		}
-	}
-
-	fun lighter() {
-		this.backgroundProperty().bind(
-			Bindings.createObjectBinding({
-				return@createObjectBinding Background(
-					BackgroundFill(
-						Settings.bgSecondary.value,
-						CornerRadii(5.0),
-						Insets.EMPTY
-					)
-				)
-			}, Settings.bgSecondary)
-		)
 	}
 }

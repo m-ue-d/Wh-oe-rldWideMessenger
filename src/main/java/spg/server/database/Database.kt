@@ -20,7 +20,7 @@ object Database {
 		Class.forName("com.mysql.cj.jdbc.Driver")
 
 		Files.readString(
-			Path.of("C:\\Users\\Admin\\Documents\\Very Secure Folder\\database-connection.txt")
+			Path.of("/Users/fabian/Documents/Very Secure Folder/database-connection.txt")
 		).split(",").let {
 			val host = it[0]
 			val port = it[1]

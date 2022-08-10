@@ -25,9 +25,13 @@ object Validator {
 		))
 	}
 
-	fun isIPValid(ip: String) : Boolean{
+	fun isIpValid(ip: String) : Boolean{
 		return ip.matches(Regex(
 			"(\\b25[0-5]|\\b2[0-4][0-9]|\\b[01]?[0-9][0-9]?)(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}"
 		))
+	}
+
+	fun isPortValid(port : Int) : Boolean {
+		return port in 1..65535
 	}
 }

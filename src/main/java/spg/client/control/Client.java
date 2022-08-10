@@ -8,20 +8,18 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import spg.client.ClientGui;
+import spg.client.view.ClientGui;
 import spg.client.control.network.ClientAuthHandler;
 import spg.client.control.network.ClientNetwork;
 import spg.shared.network.ClientConnection;
 import spg.shared.network.NetworkSide;
 import spg.shared.network.PacketDecoder;
 import spg.shared.network.PacketEncoder;
-import spg.shared.network.c2s.ServerPublicKeyC2SPacket;
+import spg.shared.network.c2s.ServerKeyC2SPacket;
 
 public class Client {
 	private final String host;
 	private final int port;
-
-	private Bootstrap bootstrap;
 
 	public static void main(String... args) {
 		String host = args.length > 0
@@ -32,29 +30,24 @@ public class Client {
 			? Integer.parseInt(args[1])
 			: 8080;
 
-		ClientGui.INSTANCE.initialize();
 		Client client= new Client(host, port);
-		client.bootstrap= new Bootstrap();
-		client.start();	//TODO: start client after ip is present (-> after welcomeView)
+		client.start();
 	}
 
 	public Client(String host, int port) {
+		ClientGui.INSTANCE.initialize();
 		this.host = host;
 		this.port = port;
 	}
 
 	public void start() {
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
-		ClientConnection connection = new ClientConnection(NetworkSide.CLIENT);
 		try{
-				this.bootstrap.group(workerGroup)
+			new Bootstrap()
+				.group(workerGroup)
 				.channel(NioSocketChannel.class)
 				.option(ChannelOption.SO_KEEPALIVE, true)
 				.handler(new ChannelInitializer<SocketChannel>() {
-					@Override
-					public void channelActive(ChannelHandlerContext ctx) {
-						System.out.println("Connected to server");
-					}
 
 					@Override
 					public void channelInactive(ChannelHandlerContext ctx) {
@@ -64,26 +57,28 @@ public class Client {
 					@Override
 					public void initChannel(SocketChannel ch) {
 						ClientNetwork.INSTANCE.initialize();
+						var connection = new ClientConnection(NetworkSide.CLIENT);
 						ClientNetwork.INSTANCE.connection = connection;
 						connection.setListener(new ClientAuthHandler(connection));
+
 						ch.pipeline().addLast(
-							new PacketDecoder(NetworkSide.SERVER),
 							new PacketEncoder(NetworkSide.CLIENT),
+							new PacketDecoder(NetworkSide.SERVER),
 							connection
 						);
 					}
-
-					@Override
-					public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-						System.err.println("Error whilst connecting to server: " + cause.getMessage());
-					}
 				})
 				.connect(host, port)
-				.syncUninterruptibly().addListener(future -> {
-					System.out.println("Requesting server public key...");
-					ClientNetwork.INSTANCE.connection.send(
-						new ServerPublicKeyC2SPacket()
-					);
+				.syncUninterruptibly().addListener(future -> { // Runs when connecting is done
+					if (future.isSuccess()) {
+						System.out.println("Connected to server");
+						System.out.println("Requesting server public key...");
+						ClientNetwork.INSTANCE.connection.send(
+							new ServerKeyC2SPacket()
+						);
+					} else {
+						System.err.println("Failed to connect to server: " + future.cause().getMessage());
+					}
 				})
 
 				.channel()

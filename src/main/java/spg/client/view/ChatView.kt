@@ -17,12 +17,12 @@ import java.nio.file.Path
 import kotlin.io.path.extension
 import kotlin.io.path.name
 
-class ChatView : ViewPane() {
+object ChatView : ViewPane() {
 	init {
-		this.center = ChatPane()
+		this.center = ChatPane
 	}
 
-	class ChatPane : VBox() {
+	object ChatPane : VBox() {
 		init {
 			addMessage(0, "Servus!")
 		}

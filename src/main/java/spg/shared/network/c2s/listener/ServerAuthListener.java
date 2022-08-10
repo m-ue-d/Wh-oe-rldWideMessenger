@@ -10,7 +10,9 @@ public interface ServerAuthListener extends PacketListener {
 
     void onReset(ResetC2SPacket buf);
 
+    void onLogout(LogoutC2SPacket buf);
+
     void onVerification(VerificationC2SPacket buf);
 
-    void onServerPublicKeyRequest(ServerPublicKeyC2SPacket buf);
+    void onServerKeyRequest(ServerKeyC2SPacket buf);
 }

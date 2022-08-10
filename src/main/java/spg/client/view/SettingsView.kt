@@ -1,12 +1,12 @@
 package spg.client.view
 
-import javafx.animation.Interpolator
 import javafx.beans.binding.Bindings
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.event.EventHandler
 import javafx.geometry.Insets
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
+import javafx.scene.Node
 import javafx.scene.control.ScrollPane
 import javafx.scene.control.Separator
 import javafx.scene.image.Image
@@ -15,6 +15,8 @@ import javafx.scene.paint.Color
 import javafx.scene.paint.ImagePattern
 import javafx.scene.shape.Circle
 import javafx.util.Duration
+import spg.client.control.network.ClientNetwork
+import spg.client.model.Internal
 import spg.client.model.Settings
 import spg.client.view.template.Button
 import spg.client.view.template.ColorField
@@ -24,21 +26,41 @@ import java.time.format.DateTimeFormatter
 import kotlin.math.max
 import kotlin.math.min
 
-class SettingsView : ViewPane() {
+object SettingsView : ViewPane() {
+
+	private val groups: MutableMap<String, Node> = mutableMapOf()
+	private val scrollPane: ScrollPane
+
 	init {
 		this.center = ScrollPane(
-			SettingsPane()
+			SettingsPane
 		).apply {
+			scrollPane = this
 			this.isFitToWidth = true
 			this.background = Background.fill(Color.TRANSPARENT)
 		}
 	}
 
-	class SettingsPane : VBox(
-		SettingsGroup("Account"),
-		AccountArea(),
+	fun scrollToGroup(group : String) {
+		AnyTransition {
+			scrollPane.vvalue = it
+		}.apply {
+			this.duration = Duration.seconds(0.5)
+			this.interpolator = Interpolator.easeOut
+			this.from = scrollPane.vvalue
+			this.to = min( // Scroll element into view
+				groups[group]!!.boundsInParent.minY.div(
+					scrollPane.content.layoutBounds.height - scrollPane.height
+				), 1.0
+			)
+		}.play()
+	}
 
-		SettingsGroup("Appearance"),
+	object SettingsPane : VBox(
+		SettingsGroup(Internal.settingGroups[0]), // use indexes because of synchronization with listview
+		AccountArea,
+
+		SettingsGroup(Internal.settingGroups[1]),
 		SettingsItem(
 			"Primary Color",
 			"The primary color of the application. It is the darkest color of all.",
@@ -64,6 +86,8 @@ class SettingsView : ViewPane() {
 			"The main color of the application's font. Usually set to a color close to white.",
 			ColorField(Settings.fontMain)
 		),
+
+		SettingsGroup(Internal.settingGroups[2]),
 	) {
 		init {
 			this.spacing = 10.0
@@ -72,6 +96,7 @@ class SettingsView : ViewPane() {
 
 	class SettingsGroup(title: String) : HBox() {
 		init {
+			groups[title] = this
 			this.alignment = Pos.CENTER
 			this.padding = Insets(20.0)
 			this.spacing = 10.0
@@ -171,7 +196,7 @@ class SettingsView : ViewPane() {
 					this.from = hoverOpacity.value
 					this.to = 0.3
 					this.duration = Duration.seconds(0.3)
-					this.interpolator = Interpolator.EASE_OUT
+					this.interpolator = Interpolator.easeOut
 				}.play()
 			}
 
@@ -182,13 +207,13 @@ class SettingsView : ViewPane() {
 					this.from = hoverOpacity.value
 					this.to = 0.0
 					this.duration = Duration.seconds(0.3)
-					this.interpolator = Interpolator.EASE_OUT
+					this.interpolator = Interpolator.easeOut
 				}.play()
 			}
 		}
 	}
 
-	class AccountArea : HBox() {
+	object AccountArea : HBox() {
 		init {
 			this.padding = Insets(10.0, 20.0, 10.0, 20.0)
 			this.children.addAll(
@@ -307,7 +332,7 @@ class SettingsView : ViewPane() {
 					Button("Log out", Color.web("#FF6F6F"), Image(
 						"/spg/client/images/settings/logout.png"
 					)) {
-
+					   ClientNetwork.INSTANCE.logout()
 					},
 					Button("Switch account", Color.web("#ECF0FF"), Image(
 						"/spg/client/images/settings/switchacc.png"

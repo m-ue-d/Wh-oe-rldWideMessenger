@@ -1,6 +1,7 @@
 package spg.shared.network;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.AttributeKey;
@@ -62,7 +63,6 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        System.out.println("ClientConnection: Connected");
         channel = ctx.channel();
         channel.attr(PROTOCOL_KEY).set(
             NetworkState.AUTHENTICATION
@@ -71,7 +71,6 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        System.out.println("ClientConnection: Disconnected");
         if (channel.isOpen()) {
             channel.close().awaitUninterruptibly();
         }
@@ -87,17 +86,22 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
         try {
             packet.apply((T) listener);
         } catch (Exception e) {
-            System.err.println("ClientConnection: Error whilst handling packet, are you sure you have the correct listener?");
+            System.err.println("ClientConnection: Error whilst handling packet, are you sure you have set the correct listener?");
             e.printStackTrace();
         }
     }
 
-    public void send(Packet<?> packet) {
-        channel.writeAndFlush(packet).addListener( future -> {
-            if (!future.isSuccess()) {
-                System.err.println("Failed to send packet: " + packet.getClass().getSimpleName());
-                future.cause().printStackTrace();
-            }
-        });
+    public ChannelFuture send(Packet<?> packet) {
+        if (channel != null) {
+            return channel.writeAndFlush(packet).addListener( future -> {
+                if (!future.isSuccess()) {
+                    System.err.println("Failed to send packet: " + packet.getClass().getSimpleName());
+                    future.cause().printStackTrace();
+                }
+            });
+        } else {
+            System.err.println("ClientConnection: Channel is null");
+            return null;
+        }
     }
 }
