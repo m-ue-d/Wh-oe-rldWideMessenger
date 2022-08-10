@@ -6,9 +6,8 @@
         <compilerSettings />
         <compilerArguments>
           <stringArguments>
-            <stringArg name="jvmTarget" arg="1.8" />
-            <stringArg name="apiVersion" arg="1.7" />
-            <stringArg name="languageVersion" arg="1.7" />
+            <stringArg name="apiVersion" arg="1.6" />
+            <stringArg name="languageVersion" arg="1.6" />
           </stringArguments>
           <arrayArguments>
             <arrayArg name="pluginClasspaths" />
@@ -30,22 +29,21 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:18.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:mac:18.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:18.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:mac:18.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-base:18.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-base:mac:18.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.10" level="project" />
-    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib:1.7.10" level="project" />
-    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-common:1.7.10" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:18.0.2" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:win:18.0.2" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:18.0.2" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:win:18.0.2" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-base:18.0.2" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-base:win:18.0.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib:1.6.10" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains:annotations:13.0" level="project" />
-    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.7.10" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-common:1.6.10" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.10" level="project" />
     <orderEntry type="library" name="Maven: mysql:mysql-connector-java:8.0.29" level="project" />
     <orderEntry type="library" name="Maven: com.google.protobuf:protobuf-java:3.19.4" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-all:5.0.0.Alpha2" level="project" />
     <orderEntry type="library" name="Maven: com.sun.mail:javax.mail:1.6.2" level="project" />
     <orderEntry type="library" name="Maven: javax.activation:activation:1.1" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.jetbrains.kotlin:kotlin-test:1.7.10" level="project" />
   </component>
 </module>

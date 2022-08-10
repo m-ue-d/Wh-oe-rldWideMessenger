@@ -62,7 +62,7 @@ object ClientGui {
 		 */
 		override fun start(s: Stage) {
 			s.apply {
-				this.icons.add(Image("/spg/client/images/logo/HummelLogoCircle.png"))
+				this.icons.add(Image("/spg/client/images/logo/heast-rounded.png"))
 			}
 
 			Settings.account.addListener { _, _, newValue ->
@@ -72,8 +72,8 @@ object ClientGui {
 				}
 			}
 
-		    welcome(s)
-//			chatting(s)
+//		    welcome(s)
+			chatting(s)
 
 			s.onCloseRequest = EventHandler {
 				ClientNetwork.INSTANCE.shutdown()

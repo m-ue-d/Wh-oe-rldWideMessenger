@@ -53,7 +53,7 @@ object NavigationView : VBox() {
 				Current.panel.set("Direct Messages")
 			},
 			SidebarButton(
-				Image("/spg/client/images/menu/friends.png"), ViewPane(), toggleGroup
+				Image("/spg/client/images/settings/client.png"), ViewPane(), toggleGroup
 			) {
 				SidebarView.hide()
 				Current.panel.set("Friends")

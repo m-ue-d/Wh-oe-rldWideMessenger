@@ -43,7 +43,17 @@ object ServerSidebarView : VBox() {
 			).apply {
 				setVgrow(this, Priority.ALWAYS)
 				this.isFitToWidth = true
-				this.background = Background.EMPTY
+				this.backgroundProperty().bind(
+					Bindings.createObjectBinding({
+						Background(
+							BackgroundFill(
+								Settings.bgSecondary.value,
+								CornerRadii.EMPTY,
+								Insets.EMPTY
+							)
+						)
+					}, Settings.bgSecondary)
+				)
 			},
 
 			VBox(
@@ -84,7 +94,7 @@ object ServerSidebarView : VBox() {
 			if (item != null) {
 				graphic = HBox(
 					ImageView(
-						Image("spg/client/images/misc/server.png")
+						Image("spg/client/images/settings/heast.png")
 					).apply {
 						this.fitHeight = 25.0
 						this.fitWidth = 25.0

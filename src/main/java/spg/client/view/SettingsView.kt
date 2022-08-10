@@ -1,5 +1,6 @@
 package spg.client.view
 
+import AccountArea
 import javafx.beans.binding.Bindings
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.event.EventHandler
@@ -18,6 +19,8 @@ import javafx.util.Duration
 import spg.client.control.network.ClientNetwork
 import spg.client.model.Internal
 import spg.client.model.Settings
+import spg.client.view.settings.ColorArea
+import spg.client.view.settings.NetworkArea
 import spg.client.view.template.Button
 import spg.client.view.template.ColorField
 import spg.client.view.template.ViewPane
@@ -36,6 +39,7 @@ object SettingsView : ViewPane() {
 			SettingsPane
 		).apply {
 			scrollPane = this
+			this.maxWidth = 1300.0
 			this.isFitToWidth = true
 			this.background = Background.fill(Color.TRANSPARENT)
 		}
@@ -61,33 +65,10 @@ object SettingsView : ViewPane() {
 		AccountArea,
 
 		SettingsGroup(Internal.settingGroups[1]),
-		SettingsItem(
-			"Primary Color",
-			"The primary color of the application. It is the darkest color of all.",
-			ColorField(Settings.bgPrimary)
-		),
-		SettingsItem(
-			"Secondary Color",
-			"A slightly lighter variant of the primary color. Used for elevated elements.",
-			ColorField(Settings.bgSecondary)
-		),
-		SettingsItem(
-			"Tertiary Color",
-			"The lightest color in the application. Used for backgrounds and light fonts.",
-			ColorField(Settings.bgTertiary)
-		),
-		SettingsItem(
-			"Accent Color",
-			"A colorful alternative to the other colors. Mainly used for tab indicators.",
-			ColorField(Settings.colorAccent)
-		),
-		SettingsItem(
-			"Font Color",
-			"The main color of the application's font. Usually set to a color close to white.",
-			ColorField(Settings.fontMain)
-		),
+		ColorArea,
 
 		SettingsGroup(Internal.settingGroups[2]),
+		NetworkArea
 	) {
 		init {
 			this.spacing = 10.0
@@ -132,6 +113,7 @@ object SettingsView : ViewPane() {
 
 	class SettingsItem(title: String, description: String, setting: Region) : HBox() {
 		private val hoverOpacity = SimpleDoubleProperty(0.0)
+
 		init {
 			this.alignment = Pos.CENTER
 			this.padding = Insets(10.0, 20.0, 10.0, 20.0)
@@ -210,149 +192,6 @@ object SettingsView : ViewPane() {
 					this.interpolator = Interpolator.easeOut
 				}.play()
 			}
-		}
-	}
-
-	object AccountArea : HBox() {
-		init {
-			this.padding = Insets(10.0, 20.0, 10.0, 20.0)
-			this.children.addAll(
-				VBox(
-					HBox(
-						Circle(75.0).apply {
-							this.fillProperty().bind(
-								Bindings.createObjectBinding({
-									return@createObjectBinding ImagePattern(
-										// Image(Settings.account.value?.img ?: "/path/to/default/img.png")
-										Image("spg/server/database/avatars/0.png")
-									)
-								}, Settings.account)
-							)
-						},
-						VBox(
-							FontManager.boldLabel("", 20.0).apply {
-								this.textProperty().bind(
-									Bindings.createObjectBinding({
-										return@createObjectBinding Settings.account.value?.uname
-											?: "Not logged in"
-									}, Settings.account)
-								)
-							},
-
-							FlexItem(vBox = true),
-
-							HBox(
-								FontManager.regularLabel("email: ", 16.0),
-								FontManager.boldLabel("", 16.0).apply {
-									this.textProperty().bind(
-										Bindings.createObjectBinding({
-											val email = Settings.account.value?.email
-												?: "guest@wwm"
-											return@createObjectBinding "${
-												email.substring(0..4)
-											}[...]${
-												email.substring(email.length - 4)
-											}"
-										}, Settings.account)
-									)
-								}
-							),
-
-							HBox(
-								FontManager.regularLabel("password: ", 16.0),
-								FontManager.boldLabel("**********", 16.0)
-							),
-
-							HBox(
-								FontManager.regularLabel("member since: ", 16.0),
-								FontManager.boldLabel("", 16.0).apply {
-									this.textProperty().bind(
-										Bindings.createObjectBinding({
-											return@createObjectBinding Settings.account.value?.since?.format(
-												DateTimeFormatter.ofPattern("dd. MMM. yyyy")
-											) ?: "Unknown"
-										}, Settings.account)
-									)
-								}
-							)
-						).apply {
-							this.padding = Insets(20.0)
-							this.spacing = 10.0
-						}
-					).apply {
-						this.alignment = Pos.CENTER_LEFT
-					},
-
-					VBox(
-						FontManager.regularLabel("Account Information:", 16.0).apply {
-							this.isWrapText = true
-						},
-
-						FlexSpacer(5.0, vBox = true),
-
-						HBox(
-							FontManager.regularLabel(" • uid: ", 16.0),
-							FontManager.boldLabel("", 16.0).apply {
-								this.textProperty().bind(
-									Bindings.createObjectBinding({
-										return@createObjectBinding Settings.account.value?.id?.toString()
-											?: "Unknown"
-									}, Settings.account)
-								)
-							}
-						),
-
-						HBox(
-							FontManager.regularLabel(" • key: ", 16.0),
-							FontManager.boldLabel("", 16.0).apply {
-								this.textProperty().bind(
-									Bindings.createObjectBinding({
-										val publicKey : String = Settings.account.value?.publicKey?.toString()
-											?: "A very long number"
-										return@createObjectBinding "${
-											publicKey.substring(0..min(20, publicKey.length - 1))
-										}..."
-									}, Settings.account)
-								)
-							}
-						),
-					).apply {
-						this.spacing = 5.0
-						this.opacity = 0.3
-					}
-				).apply {
-					this.spacing = 20.0
-				},
-
-				FlexExpander(
-					hBox = true
-				),
-
-				VBox(
-					Button("Log out", Color.web("#FF6F6F"), Image(
-						"/spg/client/images/settings/logout.png"
-					)) {
-					   ClientNetwork.INSTANCE.logout()
-					},
-					Button("Switch account", Color.web("#ECF0FF"), Image(
-						"/spg/client/images/settings/switchacc.png"
-					)) {
-
-					},
-					Button("Invite a friend", Color.web("#7CC0FF"), Image(
-						"/spg/client/images/settings/invite.png"
-					)) {
-
-					},
-					Button("Request account data", Color.web("#ECF0FF"), Image(
-						"/spg/client/images/settings/accdata.png"
-					)) {
-
-					},
-				).apply {
-					this.spacing = 10.0
-				}
-			)
 		}
 	}
 }

@@ -3,6 +3,7 @@ package spg.client.view
 import javafx.event.EventHandler
 import javafx.geometry.Insets
 import javafx.geometry.Pos
+import javafx.scene.effect.ColorAdjust
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.layout.BorderPane
@@ -69,11 +70,14 @@ object HomeView : ViewPane() {
 				},
 
 				ImageView(
-					Image("/spg/client/images/logo/messenger-white.png")
+					Image("/spg/client/images/logo/heast-nofill.png")
 				).apply {
-					this.opacity = 0.4
-					this.fitWidth = 200.0
-					this.fitHeight = 200.0
+					this.effect = ColorAdjust().apply {
+						this.saturation = -1.0
+					}
+//					this.opacity = 0.4
+					this.fitWidth = 400.0
+					this.fitHeight = 400.0
 				}
 			)
 

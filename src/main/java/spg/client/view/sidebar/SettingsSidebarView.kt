@@ -34,7 +34,17 @@ object SettingsSidebarView : VBox() {
 			).apply {
 				setVgrow(this, Priority.ALWAYS)
 				this.isFitToWidth = true
-				this.background = Background.EMPTY
+				this.backgroundProperty().bind(
+					Bindings.createObjectBinding({
+						Background(
+							BackgroundFill(
+								Settings.bgSecondary.value,
+								CornerRadii.EMPTY,
+								Insets.EMPTY
+							)
+						)
+					}, Settings.bgSecondary)
+				)
 			}
 		)
 	}

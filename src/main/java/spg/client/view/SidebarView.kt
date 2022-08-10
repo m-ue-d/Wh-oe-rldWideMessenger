@@ -52,8 +52,6 @@ object SidebarView : StackPane() {
 			this.to = 0.0
 			this.interpolator = Interpolator.easeInOutBack
 		}.play()
-
-		setView(ViewPane())
 	}
 
 	fun show(view: Node, size: Double = panelWidth) {

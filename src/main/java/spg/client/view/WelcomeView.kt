@@ -3,8 +3,6 @@ package spg.client.view
 import javafx.animation.FadeTransition
 import javafx.animation.ScaleTransition
 import javafx.beans.binding.Bindings
-import javafx.beans.value.ChangeListener
-import javafx.beans.value.ObservableValue
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.Node
@@ -22,7 +20,6 @@ import spg.client.view.utility.FlexExpander
 import spg.client.view.utility.FlexItem
 import spg.client.view.utility.FontManager
 import spg.client.view.utility.Interpolator
-import spg.shared.utility.Validator
 
 object WelcomeView : StackPane() {
 	fun setPane(node: Node) {
@@ -296,7 +293,7 @@ object WelcomeView : StackPane() {
 					},
 
 					LightButton(icon = Image(
-						"/spg/client/images/misc/done.png"
+						"/spg/client/images/settings/connected.png"
 					)) {
 						ClientNetwork.INSTANCE.verify(
 							verificationField.text.uppercase()

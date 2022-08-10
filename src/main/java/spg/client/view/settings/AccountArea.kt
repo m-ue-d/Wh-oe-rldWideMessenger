@@ -1,0 +1,161 @@
+import javafx.beans.binding.Bindings
+import javafx.geometry.Insets
+import javafx.geometry.Pos
+import javafx.scene.image.Image
+import javafx.scene.layout.HBox
+import javafx.scene.layout.VBox
+import javafx.scene.paint.Color
+import javafx.scene.paint.ImagePattern
+import javafx.scene.shape.Circle
+import spg.client.control.network.ClientNetwork
+import spg.client.model.Settings
+import spg.client.view.template.Button
+import spg.client.view.utility.FlexExpander
+import spg.client.view.utility.FlexItem
+import spg.client.view.utility.FlexSpacer
+import spg.client.view.utility.FontManager
+import java.time.format.DateTimeFormatter
+import kotlin.math.min
+
+object AccountArea : HBox() {
+	init {
+		this.padding = Insets(10.0, 20.0, 10.0, 20.0)
+		this.children.addAll(
+			VBox(
+				HBox(
+					Circle(75.0).apply {
+						this.fillProperty().bind(
+							Bindings.createObjectBinding({
+								return@createObjectBinding ImagePattern(
+									// Image(Settings.account.value?.img ?: "/path/to/default/img.png")
+									Image("spg/server/database/avatars/0.png")
+								)
+							}, Settings.account)
+						)
+					},
+					VBox(
+						FontManager.boldLabel("", 20.0).apply {
+							this.textProperty().bind(
+								Bindings.createObjectBinding({
+									return@createObjectBinding Settings.account.value?.uname
+										?: "Not logged in"
+								}, Settings.account)
+							)
+						},
+
+						FlexItem(vBox = true),
+
+						HBox(
+							FontManager.regularLabel("email: ", 16.0),
+							FontManager.boldLabel("", 16.0).apply {
+								this.textProperty().bind(
+									Bindings.createObjectBinding({
+										val email = Settings.account.value?.email
+											?: "guest@wwm"
+										return@createObjectBinding "${
+											email.substring(0..4)
+										}[...]${
+											email.substring(email.length - 4)
+										}"
+									}, Settings.account)
+								)
+							}
+						),
+
+						HBox(
+							FontManager.regularLabel("password: ", 16.0),
+							FontManager.boldLabel("**********", 16.0)
+						),
+
+						HBox(
+							FontManager.regularLabel("member since: ", 16.0),
+							FontManager.boldLabel("", 16.0).apply {
+								this.textProperty().bind(
+									Bindings.createObjectBinding({
+										return@createObjectBinding Settings.account.value?.since?.format(
+											DateTimeFormatter.ofPattern("dd. MMM. yyyy")
+										) ?: "Unknown"
+									}, Settings.account)
+								)
+							}
+						)
+					).apply {
+						this.padding = Insets(20.0)
+						this.spacing = 10.0
+					}
+				).apply {
+					this.alignment = Pos.CENTER_LEFT
+				},
+
+				VBox(
+					FontManager.regularLabel("Account Information:", 16.0).apply {
+						this.isWrapText = true
+					},
+
+					FlexSpacer(5.0, vBox = true),
+
+					HBox(
+						FontManager.regularLabel(" • uid: ", 16.0),
+						FontManager.boldLabel("", 16.0).apply {
+							this.textProperty().bind(
+								Bindings.createObjectBinding({
+									return@createObjectBinding Settings.account.value?.id?.toString()
+										?: "Unknown"
+								}, Settings.account)
+							)
+						}
+					),
+
+					HBox(
+						FontManager.regularLabel(" • key: ", 16.0),
+						FontManager.boldLabel("", 16.0).apply {
+							this.textProperty().bind(
+								Bindings.createObjectBinding({
+									val publicKey : String = Settings.account.value?.publicKey?.toString()
+										?: "A very long number"
+									return@createObjectBinding "${
+										publicKey.substring(0..min(20, publicKey.length - 1))
+									}..."
+								}, Settings.account)
+							)
+						}
+					),
+				).apply {
+					this.spacing = 5.0
+					this.opacity = 0.3
+				}
+			).apply {
+				this.spacing = 20.0
+			},
+
+			FlexExpander(
+				hBox = true
+			),
+
+			VBox(
+				Button("Log out", Color.web("#FF6F6F"), Image(
+					"/spg/client/images/settings/logout.png"
+				)) {
+				   ClientNetwork.INSTANCE.logout()
+				},
+				Button("Switch account", Color.web("#ECF0FF"), Image(
+					"/spg/client/images/settings/switchacc.png"
+				)) {
+
+				},
+				Button("Invite a friend", Color.web("#7CC0FF"), Image(
+					"/spg/client/images/settings/invite.png"
+				)) {
+
+				},
+				Button("Request account data", Color.web("#ECF0FF"), Image(
+					"/spg/client/images/settings/accdata.png"
+				)) {
+
+				},
+			).apply {
+				this.spacing = 10.0
+			}
+		)
+	}
+}
