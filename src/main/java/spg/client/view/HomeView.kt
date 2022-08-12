@@ -49,15 +49,15 @@ object HomeView : ViewPane() {
 						),
 
 						SocialLink(
-							"GitHub", Image(
-								"/spg/client/images/social/github.png",
-							), URI("https://github.com/m-ue-d/Wh-oe-rldWideMessenger")
+							"Reddit", Image(
+								"/spg/client/images/social/reddit.png",
+							), URI("")
 						),
 
 						SocialLink(
-							"GitHub", Image(
-								"/spg/client/images/social/github.png",
-							), URI("https://github.com/m-ue-d/Wh-oe-rldWideMessenger")
+							"Twitte", Image(
+								"/spg/client/images/social/twitter.png",
+							), URI("")
 						)
 					).apply {
 						this.alignment = Pos.CENTER_LEFT

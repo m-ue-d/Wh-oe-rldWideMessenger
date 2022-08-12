@@ -13,13 +13,14 @@ import javafx.scene.layout.*
 import javafx.util.Callback
 import spg.client.control.network.ClientNetwork
 import spg.client.model.Current
-import spg.client.model.ServerListItem
+import spg.client.model.Settings.ServerListItem
 import spg.client.model.Settings
 import spg.client.view.template.Button
 import spg.client.view.template.TextField
 import spg.client.view.template.specific.PortField
 import spg.client.view.utility.FontManager
 import spg.client.view.utility.HoverTransition
+import java.util.function.Consumer
 
 object ServerSidebarView : VBox() {
 	private val addressInput: TextField
@@ -37,6 +38,8 @@ object ServerSidebarView : VBox() {
 					this.selectionModel.selectedItemProperty().addListener { _, _, v ->
 						if (v != null) {
 							Current.server.set(v)
+							Settings.servers.forEach { server -> server.setActive(false) }
+							v.setActive(true)
 						}
 					}
 				},
@@ -47,12 +50,12 @@ object ServerSidebarView : VBox() {
 					Bindings.createObjectBinding({
 						Background(
 							BackgroundFill(
-								Settings.bgSecondary.value,
+								Settings.colors["Secondary Color"]!!.color.value,
 								CornerRadii.EMPTY,
 								Insets.EMPTY
 							)
 						)
-					}, Settings.bgSecondary)
+					}, Settings.colors["Secondary Color"]!!.color)
 				)
 			},
 
@@ -80,15 +83,13 @@ object ServerSidebarView : VBox() {
 		)
 
 		Settings.servers.addAll(
-			ServerListItem("Other Server", "other.example.com", 8080),
-			ServerListItem("My Server", "localhost", 25565),
-			ServerListItem("Friend's Server", "friend.example.com", 1982),
+			ServerListItem(false, "Other Server", "other.example.com", 8080),
+			ServerListItem(false, "My Server", "localhost", 25565),
+			ServerListItem(false, "Friend's Server", "friend.example.com", 1982),
 		)
 	}
 
 	class ServerListCell : ListCell<ServerListItem>() {
-		var active = false
-
 		override fun updateItem(item : ServerListItem?, empty : Boolean) {
 			super.updateItem(item, empty)
 			if (item != null) {
@@ -102,10 +103,10 @@ object ServerSidebarView : VBox() {
 
 					VBox(
 						FontManager.boldLabel(
-							item.getName()
+							item.name
 						),
 						FontManager.regularLabel(
-							item.getIp() + " : " + item.getPort()
+							item.ip + " : " + item.port
 						).apply {
 							this.font = FontManager.regularFont(11.0)
 						},
@@ -114,16 +115,36 @@ object ServerSidebarView : VBox() {
 					this.alignment = Pos.CENTER_LEFT
 					this.spacing = 10.0
 					this.padding = Insets(15.0)
+					this.borderProperty().bind(
+						Bindings.createObjectBinding({
+							Border(
+								BorderStroke(
+									Settings.colors["Selection Color"]!!.color.value,
+									BorderStrokeStyle.SOLID,
+									CornerRadii(10.0),
+									BorderWidths(1.0)
+								)
+							)
+						}, Settings.colors["Selection Color"]!!.color)
+					)
 					this.backgroundProperty().bind(
 						Bindings.createObjectBinding({
 							Background(
 								BackgroundFill(
-									Settings.bgPrimary.value,
+									if (item.activeProperty.value) {
+										Settings.colors["Selection Color"]!!.color.value
+									} else {
+										Settings.colors["Secondary Color"]!!.color.value
+									},
 									CornerRadii(10.0),
 									Insets.EMPTY
 								)
 							)
-						}, Settings.bgPrimary)
+						},
+							Settings.colors["Selection Color"]!!.color,
+							Settings.colors["Secondary Color"]!!.color,
+							item.activeProperty
+						)
 					)
 
 					this.onMouseEntered = EventHandler {

@@ -11,14 +11,15 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
+import spg.client.view.SettingsView
 import spg.client.view.utility.FontManager
 
 object NetworkArea : VBox() {
     init {
-        this.padding = Insets(10.0, 20.0, 10.0, 20.0)
         this.isFillWidth = true
         this.spacing = 10.0
         this.children.addAll(
+            SettingsView.SettingsGroup("Network"),
             HBox(
                 VBox(
                     ImageView(
@@ -93,6 +94,7 @@ object NetworkArea : VBox() {
                     this.spacing = 5.0
                 },
             ).apply {
+                this.padding = Insets(10.0, 20.0, 10.0, 20.0)
                 this.alignment = Pos.CENTER
                 this.spacing = 20.0
                 this.isFillHeight = true

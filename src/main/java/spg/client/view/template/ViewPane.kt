@@ -15,12 +15,12 @@ open class ViewPane : BorderPane() {
 			Bindings.createObjectBinding({
 				Background(
 					BackgroundFill(
-						Settings.bgSecondary.value,
+						Settings.colors["Secondary Color"]!!.color.value,
 						CornerRadii(10.0),
 						Insets.EMPTY
 					)
 				)
-			}, Settings.bgSecondary)
+			}, Settings.colors["Secondary Color"]!!.color)
 		)
 	}
 }

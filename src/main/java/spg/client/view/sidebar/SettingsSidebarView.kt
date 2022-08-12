@@ -10,6 +10,7 @@ import javafx.scene.control.ScrollPane
 import javafx.scene.layout.*
 import javafx.util.Callback
 import spg.client.model.Internal
+import spg.client.model.Internal.SettingsListItem
 import spg.client.model.Settings
 import spg.client.view.SettingsView
 import spg.client.view.utility.FontManager
@@ -20,14 +21,16 @@ object SettingsSidebarView : VBox() {
 		this.spacing = 10.0
 		this.children.addAll(
 			ScrollPane(
-				ListView<String>().apply {
+				ListView<SettingsListItem>().apply {
 					this.items = Internal.settingGroups
 					this.cellFactory = Callback {
 						SettingGroupCell()
 					}
 					this.selectionModel.selectedItemProperty().addListener { _, _, v ->
 						if (v != null) {
-							SettingsView.scrollToGroup(v)
+							SettingsView.setContent(v.content)
+							Internal.settingGroups.forEach { setting -> setting.setActive(false) }
+							v.setActive(true)
 						}
 					}
 				},
@@ -38,39 +41,59 @@ object SettingsSidebarView : VBox() {
 					Bindings.createObjectBinding({
 						Background(
 							BackgroundFill(
-								Settings.bgSecondary.value,
+								Settings.colors["Secondary Color"]!!.color.value,
 								CornerRadii.EMPTY,
 								Insets.EMPTY
 							)
 						)
-					}, Settings.bgSecondary)
+					}, Settings.colors["Secondary Color"]!!.color)
 				)
 			}
 		)
 	}
 
-	class SettingGroupCell : ListCell<String>() {
-		override fun updateItem(item : String?, empty : Boolean) {
+	class SettingGroupCell : ListCell<SettingsListItem>() {
+		override fun updateItem(item : SettingsListItem?, empty : Boolean) {
 			super.updateItem(item, empty)
 			if (item != null) {
 				graphic = HBox(
 					FontManager.boldLabel(
-						item
+						item.group
 					)
 				).apply {
 					this.alignment = Pos.CENTER_LEFT
 					this.spacing = 10.0
 					this.padding = Insets(15.0)
+					this.borderProperty().bind(
+						Bindings.createObjectBinding({
+							Border(
+								BorderStroke(
+									Settings.colors["Selection Color"]!!.color.value,
+									BorderStrokeStyle.SOLID,
+									CornerRadii(10.0),
+									BorderWidths(1.0)
+								)
+							)
+						}, Settings.colors["Selection Color"]!!.color)
+					)
 					this.backgroundProperty().bind(
 						Bindings.createObjectBinding({
 							Background(
 								BackgroundFill(
-									Settings.bgPrimary.value,
+									if (item.activeProperty.value) {
+										Settings.colors["Selection Color"]!!.color.value
+									} else {
+										Settings.colors["Secondary Color"]!!.color.value
+									},
 									CornerRadii(10.0),
 									Insets.EMPTY
 								)
 							)
-						}, Settings.bgPrimary)
+						},
+							Settings.colors["Selection Color"]!!.color,
+							Settings.colors["Secondary Color"]!!.color,
+							item.activeProperty
+						)
 					)
 
 					this.onMouseEntered = EventHandler {

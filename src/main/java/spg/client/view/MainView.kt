@@ -33,12 +33,12 @@ object MainView : BorderPane() {
 			Bindings.createObjectBinding({
 				Background(
 					BackgroundFill(
-						Settings.bgPrimary.value,
+						Settings.colors["Primary Color"]!!.color.value,
 						CornerRadii.EMPTY,
 						Insets.EMPTY
 					)
 				)
-			}, Settings.bgPrimary)
+			}, Settings.colors["Primary Color"]!!.color)
 		)
 	}
 

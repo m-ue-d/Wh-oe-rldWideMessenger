@@ -21,7 +21,7 @@ public class ClientAuthHandler implements ClientAuthListener {
             case OK -> {
                 System.out.println("Server: Logged in!");
                 Platform.runLater(() ->
-                    Settings.account.set(buf.getUser())
+                    Settings.INSTANCE.getAccount().set(buf.getUser())
                 );
             }
 

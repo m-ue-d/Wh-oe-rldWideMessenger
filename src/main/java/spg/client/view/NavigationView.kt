@@ -138,7 +138,7 @@ object NavigationView : VBox() {
 									Color.TRANSPARENT,
 									Color.TRANSPARENT,
 									Color.TRANSPARENT,
-									Settings.colorAccent.value,
+									Settings.colors["Accent Color"]!!.color.value,
 									BorderStrokeStyle.NONE,
 									BorderStrokeStyle.NONE,
 									BorderStrokeStyle.NONE,
@@ -148,7 +148,7 @@ object NavigationView : VBox() {
 									Insets.EMPTY,
 								)
 							)
-						}, Settings.colorAccent)
+						}, Settings.colors["Accent Color"]!!.color)
 					)
 				} else {
 					FadeTransition().apply {

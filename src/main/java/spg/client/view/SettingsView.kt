@@ -10,74 +10,54 @@ import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.control.ScrollPane
 import javafx.scene.control.Separator
-import javafx.scene.image.Image
 import javafx.scene.layout.*
 import javafx.scene.paint.Color
-import javafx.scene.paint.ImagePattern
-import javafx.scene.shape.Circle
 import javafx.util.Duration
-import spg.client.control.network.ClientNetwork
 import spg.client.model.Internal
 import spg.client.model.Settings
-import spg.client.view.settings.ColorArea
+import spg.client.view.settings.AppearanceArea
 import spg.client.view.settings.NetworkArea
-import spg.client.view.template.Button
-import spg.client.view.template.ColorField
 import spg.client.view.template.ViewPane
 import spg.client.view.utility.*
-import java.time.format.DateTimeFormatter
-import kotlin.math.max
 import kotlin.math.min
 
 object SettingsView : ViewPane() {
-
-	private val groups: MutableMap<String, Node> = mutableMapOf()
 	private val scrollPane: ScrollPane
 
 	init {
 		this.center = ScrollPane(
-			SettingsPane
+			AccountArea
 		).apply {
 			scrollPane = this
 			this.maxWidth = 1300.0
 			this.isFitToWidth = true
 			this.background = Background.fill(Color.TRANSPARENT)
+
+			Internal.settingGroups[0].setActive(true)
 		}
 	}
 
-	fun scrollToGroup(group : String) {
-		AnyTransition {
-			scrollPane.vvalue = it
-		}.apply {
-			this.duration = Duration.seconds(0.5)
-			this.interpolator = Interpolator.easeOut
-			this.from = scrollPane.vvalue
-			this.to = min( // Scroll element into view
-				groups[group]!!.boundsInParent.minY.div(
-					scrollPane.content.layoutBounds.height - scrollPane.height
-				), 1.0
-			)
-		}.play()
+	fun setContent(content: Node) {
+		scrollPane.content = content
 	}
 
-	object SettingsPane : VBox(
-		SettingsGroup(Internal.settingGroups[0]), // use indexes because of synchronization with listview
-		AccountArea,
-
-		SettingsGroup(Internal.settingGroups[1]),
-		ColorArea,
-
-		SettingsGroup(Internal.settingGroups[2]),
-		NetworkArea
-	) {
-		init {
-			this.spacing = 10.0
-		}
-	}
+//	fun scrollToGroup(group : String) {
+//		AnyTransition {
+//			scrollPane.vvalue = it
+//		}.apply {
+//			this.duration = Duration.seconds(0.5)
+//			this.interpolator = Interpolator.easeOut
+//			this.from = scrollPane.vvalue
+//			this.to = min( // Scroll element into view
+//				groups[group]!!.boundsInParent.minY.div(
+//					scrollPane.content.layoutBounds.height - scrollPane.height
+//				), 1.0
+//			)
+//		}.play()
+//	}
 
 	class SettingsGroup(title: String) : HBox() {
 		init {
-			groups[title] = this
 			this.alignment = Pos.CENTER
 			this.padding = Insets(20.0)
 			this.spacing = 10.0
@@ -86,24 +66,24 @@ object SettingsView : ViewPane() {
 					this.backgroundProperty().bind(
 						Bindings.createObjectBinding({
 							return@createObjectBinding Background.fill(
-								Settings.bgTertiary.value
+								Settings.colors["Tertiary Color"]!!.color.value
 							)
-						}, Settings.bgTertiary)
+						}, Settings.colors["Tertiary Color"]!!.color)
 					)
 					setHgrow(this, Priority.ALWAYS)
 				},
 				FontManager.boldLabel(title, 16.0).apply {
 					this.textFillProperty().bind(
-						Settings.bgTertiary
+						Settings.colors["Tertiary Color"]!!.color
 					)
 				},
 				Separator(Orientation.HORIZONTAL).apply {
 					this.backgroundProperty().bind(
 						Bindings.createObjectBinding({
 							return@createObjectBinding Background.fill(
-								Settings.bgTertiary.value
+								Settings.colors["Tertiary Color"]!!.color.value
 							)
-						}, Settings.bgTertiary)
+						}, Settings.colors["Tertiary Color"]!!.color)
 					)
 					setHgrow(this, Priority.ALWAYS)
 				}
@@ -122,14 +102,14 @@ object SettingsView : ViewPane() {
 				VBox(
 					FontManager.boldLabel(title, 16.0).apply {
 						this.textFillProperty().bind(
-							Settings.fontMain
+							Settings.colors["Font Color"]!!.color
 						)
 					},
 					FontManager.regularLabel(description, 14.0).apply {
 						this.prefWidth = 300.0
 						this.isWrapText = true
 						this.textFillProperty().bind(
-							Settings.bgTertiary
+							Settings.colors["Tertiary Color"]!!.color
 						)
 					}
 				).apply {
@@ -147,12 +127,12 @@ object SettingsView : ViewPane() {
 						Bindings.createObjectBinding({
 							return@createObjectBinding Background(
 								BackgroundFill(
-									Settings.bgPrimary.value,
+									Settings.colors["Primary Color"]!!.color.value,
 									CornerRadii(5.0),
 									Insets.EMPTY
 								)
 							)
-						}, Settings.bgPrimary)
+						}, Settings.colors["Primary Color"]!!.color)
 					)
 				}
 			)
@@ -161,14 +141,14 @@ object SettingsView : ViewPane() {
 				Bindings.createObjectBinding({
 					return@createObjectBinding Background(
 						BackgroundFill(
-							Settings.bgTertiary.value.deriveColor(
+							Settings.colors["Tertiary Color"]!!.color.value.deriveColor(
 								0.0, 1.0, 1.0, hoverOpacity.value
 							),
 							CornerRadii(7.0),
 							Insets.EMPTY
 						)
 					)
-				}, Settings.bgTertiary, hoverOpacity)
+				}, Settings.colors["Tertiary Color"]!!.color, hoverOpacity)
 			)
 
 			this.onMouseEntered = EventHandler {

@@ -16,7 +16,7 @@ object FontManager {
 
 	fun regularLabel(text: String = "", size: Double = 14.0) : Label {
 		return Label(text).apply {
-			this.textFillProperty().bind(Settings.fontMain)
+			this.textFillProperty().bind(Settings.colors["Font Color"]!!.color)
 			this.font = regularFont(size)
 			this.isWrapText = true
 		}
@@ -32,7 +32,7 @@ object FontManager {
 
 	fun boldLabel(text: String = "", size: Double = 14.0) : Label {
 		return Label(text).apply {
-			this.textFillProperty().bind(Settings.fontMain)
+			this.textFillProperty().bind(Settings.colors["Font Color"]!!.color)
 			this.font = boldFont(size)
 			this.isWrapText = true
 		}

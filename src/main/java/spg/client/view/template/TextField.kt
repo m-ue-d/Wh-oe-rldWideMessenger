@@ -22,21 +22,21 @@ open class TextField(prompt: String? = null) : javafx.scene.control.TextField() 
 			Bindings.createObjectBinding({
 				return@createObjectBinding "-fx-text-fill: ${
 					ColorUtil.toHex(
-						Settings.fontMain.value
+						Settings.colors["Font Color"]!!.color.value
 					)
 				};"
-			}, Settings.fontMain)
+			}, Settings.colors["Font Color"]!!.color)
 		)
 		this.backgroundProperty().bind(
 			Bindings.createObjectBinding({
 				return@createObjectBinding Background(
 					BackgroundFill(
-						Settings.bgPrimary.value,
+						Settings.colors["Primary Color"]!!.color.value,
 						CornerRadii(5.0),
 						Insets.EMPTY
 					)
 				)
-			}, Settings.bgPrimary)
+			}, Settings.colors["Primary Color"]!!.color)
 		)
 	}
 }

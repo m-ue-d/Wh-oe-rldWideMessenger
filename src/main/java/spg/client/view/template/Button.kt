@@ -27,12 +27,12 @@ open class Button(text: String? = null, color: Color? = null, icon: Image? = nul
 			Bindings.createObjectBinding({
 				return@createObjectBinding Background(
 					BackgroundFill(
-						Settings.bgPrimary.value,
+						Settings.colors["Primary Color"]!!.color.value,
 						CornerRadii(5.0),
 						Insets.EMPTY
 					)
 				)
-			}, Settings.bgPrimary)
+			}, Settings.colors["Primary Color"]!!.color)
 		)
 
 		if (icon != null) {

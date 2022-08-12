@@ -13,6 +13,7 @@ import javafx.util.StringConverter
 import spg.client.model.Settings
 import spg.client.view.utility.ColorUtil
 import spg.client.view.utility.FontManager
+import java.util.Collections.max
 
 class ColorField(property: ObjectProperty<Color>) : TextField() {
 	init {
@@ -23,21 +24,27 @@ class ColorField(property: ObjectProperty<Color>) : TextField() {
 			Bindings.createObjectBinding({
 				return@createObjectBinding "-fx-text-fill: ${
 					ColorUtil.toHex(
-						Settings.bgPrimary.value.invert()
+						Settings.colors["Primary Color"]!!.color.value.let {
+							if (max(listOf(it.red, it.green, it.blue)) < 0.5) {
+								Color.web("#ebf2ff")
+							} else {
+								Color.web("#1d1d21")
+							}
+						}
 					)
 				};"
-			}, property)
+			}, Settings.colors["Primary Color"]!!.color)
 		)
 		this.backgroundProperty().bind(
 			Bindings.createObjectBinding({
 				return@createObjectBinding Background(
 					BackgroundFill(
-						Settings.bgPrimary.value,
+						Settings.colors["Primary Color"]!!.color.value,
 						CornerRadii(5.0),
 						Insets.EMPTY
 					)
 				)
-			}, Settings.bgPrimary)
+			}, Settings.colors["Primary Color"]!!.color)
 		)
 		Bindings.bindBidirectional(
 			this.textProperty(),

@@ -1,30 +1,44 @@
-package spg.client.model;
+package spg.client.model
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import AccountArea
+import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.property.SimpleStringProperty
+import javafx.collections.FXCollections
+import javafx.collections.ObservableList
+import javafx.scene.Node
+import spg.client.view.settings.AppearanceArea
+import spg.client.view.settings.NetworkArea
 
-import java.util.ArrayList;
-import java.util.List;
+object Internal {
+	val version = SimpleStringProperty(
+		"0.1.0"
+	)
 
-public final class Internal {
-    public static final SimpleStringProperty version = new SimpleStringProperty(
-        "0.1.0"
-    );
+    val mainTitle = SimpleStringProperty(
+		"Whörld Wide Messenger"
+	)
 
-    public static final SimpleStringProperty mainTitle = new SimpleStringProperty(
-        "Whörld Wide Messenger"
-    );
+	val welcomeTitle = SimpleStringProperty(
+		"Welcome"
+	)
 
-    public static final SimpleStringProperty welcomeTitle = new SimpleStringProperty(
-        "Welcome"
-    );
+	val titleQuote = SimpleStringProperty(
+		"The messenger with revolutionary technology"
+	)
 
-    public static final SimpleStringProperty titleQuote = new SimpleStringProperty(
-        "The messenger with revolutionary technology"
-    );
+	val settingGroups : ObservableList<SettingsListItem> = FXCollections.observableList(
+		listOf(
+			SettingsListItem(group = "Account", content = AccountArea),
+			SettingsListItem(group = "Appearance", content = AppearanceArea),
+			SettingsListItem(group = "Network", content = NetworkArea),
+		)
+	)
 
-    public static final ObservableList<String> settingGroups = FXCollections.observableList(
-        List.of("Account", "Appearance", "Network")
-    );
+	class SettingsListItem(active : Boolean = false, val group : String, val content: Node) {
+		val activeProperty = SimpleBooleanProperty(active)
+
+		fun setActive(active : Boolean) {
+			activeProperty.set(active)
+		}
+	}
 }

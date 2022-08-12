@@ -18,12 +18,12 @@ class LightButton(text: String? = null, color: Color? = null, icon: Image? = nul
 			Bindings.createObjectBinding({
 				return@createObjectBinding Background(
 					BackgroundFill(
-						Settings.bgSecondary.value,
+						Settings.colors["Secondary Color"]!!.color.value,
 						CornerRadii(5.0),
 						Insets.EMPTY
 					)
 				)
-			}, Settings.bgSecondary)
+			}, Settings.colors["Secondary Color"]!!.color)
 		)
 	}
 }

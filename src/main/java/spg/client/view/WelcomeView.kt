@@ -47,8 +47,8 @@ object WelcomeView : StackPane() {
 			this.spacing = 20.0
 			this.backgroundProperty().bind(
 				Bindings.createObjectBinding({
-					Background.fill(Settings.bgSecondary.value)
-				}, Settings.bgSecondary)
+					Background.fill(Settings.colors["Secondary Color"]!!.color.value)
+				}, Settings.colors["Secondary Color"]!!.color)
 			)
 
 			this.children.addAll(
@@ -96,8 +96,8 @@ object WelcomeView : StackPane() {
 			this.spacing = 20.0
 			this.backgroundProperty().bind(
 				Bindings.createObjectBinding({
-					Background.fill(Settings.bgSecondary.value)
-				}, Settings.bgSecondary)
+					Background.fill(Settings.colors["Secondary Color"]!!.color.value)
+				}, Settings.colors["Secondary Color"]!!.color)
 			)
 
 			this.children.addAll(
@@ -171,8 +171,8 @@ object WelcomeView : StackPane() {
 			this.spacing = 20.0
 			this.backgroundProperty().bind(
 				Bindings.createObjectBinding({
-					Background.fill(Settings.bgSecondary.value)
-				}, Settings.bgSecondary)
+					Background.fill(Settings.colors["Secondary Color"]!!.color.value)
+				}, Settings.colors["Secondary Color"]!!.color)
 			)
 
 			this.children.addAll(
@@ -257,12 +257,12 @@ object WelcomeView : StackPane() {
 				Bindings.createObjectBinding({
 					Background(
 						BackgroundFill(
-							Settings.bgPrimary.value,
+							Settings.colors["Primary Color"]!!.color.value,
 							CornerRadii(10.0),
 							Insets(30.0)
 						)
 					)
-				}, Settings.bgPrimary)
+				}, Settings.colors["Primary Color"]!!.color)
 			)
 
 			this.padding = Insets(50.0)

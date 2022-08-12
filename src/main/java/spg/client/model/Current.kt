@@ -1,19 +1,20 @@
-package spg.client.model;
+package spg.client.model
 
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.SimpleIntegerProperty
+import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.property.SimpleStringProperty
+import spg.client.model.Settings.ServerListItem
 
-public class Current {
-    public static final SimpleStringProperty panel = new SimpleStringProperty(
-        Internal.mainTitle.get()
-    );
+object Current {
+	val panel = SimpleStringProperty(
+		Internal.mainTitle.get()
+	)
 
-    public static final SimpleObjectProperty<ServerListItem> server = new SimpleObjectProperty<>(
-        null
-    );
+	val server = SimpleObjectProperty<ServerListItem?>(
+		null
+	)
 
-    public static final SimpleIntegerProperty channel = new SimpleIntegerProperty(
-        -1
-    );
+	val channel = SimpleIntegerProperty(
+		-1
+	)
 }
