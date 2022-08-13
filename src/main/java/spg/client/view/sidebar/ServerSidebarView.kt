@@ -4,6 +4,7 @@ import javafx.beans.binding.Bindings
 import javafx.event.EventHandler
 import javafx.geometry.Insets
 import javafx.geometry.Pos
+import javafx.scene.Cursor
 import javafx.scene.control.ListCell
 import javafx.scene.control.ListView
 import javafx.scene.control.ScrollPane
@@ -15,17 +16,15 @@ import spg.client.control.network.ClientNetwork
 import spg.client.model.Current
 import spg.client.model.Settings.ServerListItem
 import spg.client.model.Settings
+import spg.client.view.MainView
+import spg.client.view.dialog.ServerAddView
 import spg.client.view.template.Button
 import spg.client.view.template.TextField
-import spg.client.view.template.specific.PortField
+import spg.client.view.template.PortField
 import spg.client.view.utility.FontManager
 import spg.client.view.utility.HoverTransition
-import java.util.function.Consumer
 
 object ServerSidebarView : VBox() {
-	private val addressInput: TextField
-	private val portInput: TextField
-
 	init {
 		this.spacing = 10.0
 		this.children.addAll(
@@ -59,26 +58,17 @@ object ServerSidebarView : VBox() {
 				)
 			},
 
-			VBox(
-				TextField("Address").apply {
-					addressInput = this
-				},
-
-				HBox(
-					PortField("Port").apply {
-						portInput = this
-					}, Button(icon = Image(
-						"/spg/client/images/misc/add.png"
-					)) {
-						ClientNetwork.INSTANCE.tryAddServer(
-							addressInput.text, portInput.text.toInt()
-						)
-					}
-				).apply {
-					this.spacing = 10.0
-				}
-			).apply {
-				this.spacing = 10.0
+			Button("Add server", icon = Image(
+				"/spg/client/images/misc/add.png"
+			)) {
+				MainView.addView(
+					ServerAddView.BackGround, scale = false
+				)
+				MainView.addView(
+					ServerAddView
+				)
+			}.apply {
+				this.alignment = Pos.CENTER
 			}
 		)
 
@@ -112,6 +102,7 @@ object ServerSidebarView : VBox() {
 						},
 					)
 				).apply {
+					this.cursor = Cursor.HAND
 					this.alignment = Pos.CENTER_LEFT
 					this.spacing = 10.0
 					this.padding = Insets(15.0)

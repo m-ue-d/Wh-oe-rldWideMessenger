@@ -27,6 +27,7 @@
     -fx-background-color: #61636a;
     -fx-background-radius: 5em;
 }
+
 /* List View Styling */
 .list-view {
     -fx-background-color: transparent;

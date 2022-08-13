@@ -1,16 +1,15 @@
 package spg.client.view.settings
 
+import javafx.beans.binding.Bindings
 import javafx.geometry.Insets
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.scene.control.Separator
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
-import javafx.scene.layout.Background
-import javafx.scene.layout.HBox
-import javafx.scene.layout.Priority
-import javafx.scene.layout.VBox
+import javafx.scene.layout.*
 import javafx.scene.paint.Color
+import spg.client.model.Settings
 import spg.client.view.SettingsView
 import spg.client.view.utility.FontManager
 
@@ -99,6 +98,18 @@ object NetworkArea : VBox() {
                 this.spacing = 20.0
                 this.isFillHeight = true
             }
+        )
+
+        this.backgroundProperty().bind(
+            Bindings.createObjectBinding({
+                Background(
+                    BackgroundFill(
+                        Settings.colors["Secondary Color"]!!.color.value,
+                        CornerRadii(10.0),
+                        Insets.EMPTY
+                    )
+                )
+            }, Settings.colors["Secondary Color"]!!.color)
         )
     }
 }

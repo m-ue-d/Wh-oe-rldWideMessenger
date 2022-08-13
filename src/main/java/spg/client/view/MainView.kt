@@ -9,8 +9,7 @@ import spg.client.model.Settings
 import spg.client.view.utility.MultiStack
 
 object MainView : BorderPane() {
-
-	private var stack: StackPane
+	private var stackPane: StackPane
 
 	init {
 		this.center = BorderPane().apply {
@@ -18,7 +17,7 @@ object MainView : BorderPane() {
 			this.center = StackPane(
 				// <current view>
 			).apply {
-				stack = this
+				stackPane = this
 				this.padding = Insets(0.0, 20.0, 20.0, 0.0)
 			}
 		}
@@ -42,7 +41,15 @@ object MainView : BorderPane() {
 		)
 	}
 
-	fun setView(view: Node) {
-		MultiStack.setStackPaneView(view, stack)
+	fun setView(view: Node, scale: Boolean = true, fade: Boolean = true) {
+		MultiStack.setStackPaneView(view, stackPane, scale, fade)
+	}
+
+	fun addView(view: Node, scale: Boolean = true, fade: Boolean = true) {
+		MultiStack.addStackPaneView(view, stackPane, scale, fade)
+	}
+
+	fun removeView(view: Node, scale: Boolean = true, fade: Boolean = true) {
+		MultiStack.removeStackPaneView(view, stackPane, scale, fade)
 	}
 }

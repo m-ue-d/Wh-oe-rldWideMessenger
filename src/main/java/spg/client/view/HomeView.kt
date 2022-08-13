@@ -3,6 +3,7 @@ package spg.client.view
 import javafx.event.EventHandler
 import javafx.geometry.Insets
 import javafx.geometry.Pos
+import javafx.scene.Cursor
 import javafx.scene.effect.ColorAdjust
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
@@ -55,7 +56,7 @@ object HomeView : ViewPane() {
 						),
 
 						SocialLink(
-							"Twitte", Image(
+							"Twitter", Image(
 								"/spg/client/images/social/twitter.png",
 							), URI("")
 						)
@@ -70,11 +71,8 @@ object HomeView : ViewPane() {
 				},
 
 				ImageView(
-					Image("/spg/client/images/logo/heast-nofill.png")
+					Image("/spg/client/images/logo/heast-grayscale.png")
 				).apply {
-					this.effect = ColorAdjust().apply {
-						this.saturation = -1.0
-					}
 //					this.opacity = 0.4
 					this.fitWidth = 400.0
 					this.fitHeight = 400.0
@@ -86,8 +84,9 @@ object HomeView : ViewPane() {
 		}
 	}
 
-	class SocialLink(private val name: String, private val img: Image, private val link: URI) : BorderPane() {
+	class SocialLink(name: String, img: Image, link: URI) : BorderPane() {
 		init {
+			this.cursor = Cursor.HAND
 			this.center = ImageView(img).apply {
 				this.fitWidth = 30.0
 				this.fitHeight = 30.0

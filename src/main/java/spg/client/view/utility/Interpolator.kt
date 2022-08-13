@@ -18,9 +18,17 @@ object Interpolator {
 		}
 	}
 
+	val easeInBack = object : Interpolator() {
+		override fun curve(t : Double) : Double {
+			val c1 = 1.70158
+			val c3 = c1 + 1.0
+			return c3 * t * t * t - c1 * t * t
+		}
+	}
+
 	val easeOut = object : Interpolator() {
 		override fun curve(t: Double) : Double {
-			return if(t == 1.0) 1.0 else 1.0 - pow(2.0, -10 * t)
+			return if(t == 1.0) 1.0 else 1.0 - 2.0.pow(-10 * t)
         }
 	}
 }

@@ -1,6 +1,7 @@
 package spg.client.view.utility
 
 import javafx.scene.paint.Color
+import java.util.*
 
 object ColorUtil {
 	fun toHex(c: Color) : String {
@@ -8,6 +9,19 @@ object ColorUtil {
 			(c.red * 255).toInt(),
 			(c.green * 255).toInt(),
 			(c.blue * 255).toInt()
+		)
+	}
+
+	fun toRGB(c: Color) : String {
+		return toRGBA(c, 1.0)
+	}
+
+	fun toRGBA(c: Color, o: Double) : String {
+		return String.format(Locale.US, "rgba(%d, %d, %d, %f)",
+			(c.red * 255).toInt(),
+			(c.green * 255).toInt(),
+			(c.blue * 255).toInt(),
+			o
 		)
 	}
 

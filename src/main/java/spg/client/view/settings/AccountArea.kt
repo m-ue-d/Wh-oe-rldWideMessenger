@@ -2,8 +2,7 @@ import javafx.beans.binding.Bindings
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.image.Image
-import javafx.scene.layout.HBox
-import javafx.scene.layout.VBox
+import javafx.scene.layout.*
 import javafx.scene.paint.Color
 import javafx.scene.paint.ImagePattern
 import javafx.scene.shape.Circle
@@ -162,6 +161,18 @@ object AccountArea : VBox() {
 			).apply {
 				this.padding = Insets(10.0, 20.0, 10.0, 20.0)
 			}
+		)
+
+		this.backgroundProperty().bind(
+			Bindings.createObjectBinding({
+				Background(
+					BackgroundFill(
+						Settings.colors["Secondary Color"]!!.color.value,
+						CornerRadii(10.0),
+						Insets.EMPTY
+					)
+				)
+			}, Settings.colors["Secondary Color"]!!.color)
 		)
 	}
 }

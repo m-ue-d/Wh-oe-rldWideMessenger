@@ -8,6 +8,7 @@ import javafx.beans.property.SimpleBooleanProperty
 import javafx.event.EventHandler
 import javafx.geometry.Insets
 import javafx.geometry.Pos
+import javafx.scene.Cursor
 import javafx.scene.Node
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
@@ -105,16 +106,12 @@ object NavigationView : VBox() {
 		}
 	}
 
-	class SidebarButton(
-		private val img: Image,
-		private val content: Node,
-		private val toggleGroup : ToggleGroup? = null,
-		private val onAction: EventHandler<MouseEvent>? = null
-	) : BorderPane() {
+	class SidebarButton(private val img: Image, private val content: Node, private val toggleGroup : ToggleGroup? = null, private val onAction: EventHandler<MouseEvent>? = null) : BorderPane() {
 		val active: SimpleBooleanProperty = SimpleBooleanProperty(false)
 
 		init {
 			toggleGroup?.add(this)
+			this.cursor = Cursor.HAND
 			this.prefHeight = 40.0
 			this.center = ImageView(img).apply {
 				this.fitWidth = 15.0

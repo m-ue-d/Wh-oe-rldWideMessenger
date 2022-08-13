@@ -135,4 +135,11 @@ public final class ClientNetwork {
             return;
         }
     }
+
+    public void testConnection(String host, int port) {
+        if (!Validator.INSTANCE.isIpValid(host) || !Validator.INSTANCE.isPortValid(port)) {
+            System.err.println("Invalid server address");
+            return;
+        }
+    }
 }

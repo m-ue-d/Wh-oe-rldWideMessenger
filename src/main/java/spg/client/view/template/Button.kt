@@ -3,9 +3,11 @@ package spg.client.view.template
 import javafx.animation.Interpolator
 import javafx.animation.TranslateTransition
 import javafx.beans.binding.Bindings
+import javafx.beans.property.SimpleObjectProperty
 import javafx.event.EventHandler
 import javafx.geometry.Insets
 import javafx.geometry.Pos
+import javafx.scene.Cursor
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.input.MouseEvent
@@ -17,8 +19,11 @@ import spg.client.view.utility.AnyTransition
 import spg.client.view.utility.FontManager
 import spg.client.view.utility.HoverTransition
 
-open class Button(text: String? = null, color: Color? = null, icon: Image? = null, onAction: EventHandler<MouseEvent>) : HBox() {
+open class Button(text: String? = null, color: SimpleObjectProperty<Color>? = null, icon: Image? = null, onAction: EventHandler<MouseEvent>) : HBox() {
+	constructor(text: String?, color: Color?, icon: Image?, onAction: EventHandler<MouseEvent>) : this(text, SimpleObjectProperty(color), icon, onAction)
+
 	init {
+		this.cursor = Cursor.HAND
 		this.padding = Insets(10.0)
 		this.spacing = 10.0
 		this.prefHeight = 40.0
@@ -47,8 +52,10 @@ open class Button(text: String? = null, color: Color? = null, icon: Image? = nul
 		if (text != null) {
 			this.children.add(
 				FontManager.boldLabel(text, 16.0).apply {
-					this.textFillProperty().unbind()
-					this.textFill = color
+					if (color != null) {
+						this.textFillProperty().unbind()
+						this.textFillProperty().bind(color)
+					}
 				}
 			)
 		}

@@ -13,7 +13,7 @@ import spg.client.model.Settings
 import spg.client.view.template.Button
 import spg.client.view.template.TextField
 
-class LightTextField(prompt: String? = null) : TextField(prompt) {
+class LightTextField(prompt: String = "") : TextField(prompt) {
 	init {
 		this.backgroundProperty().bind(
 			Bindings.createObjectBinding({

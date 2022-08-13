@@ -22,23 +22,28 @@ import spg.client.view.utility.*
 import kotlin.math.min
 
 object SettingsView : ViewPane() {
-	private val scrollPane: ScrollPane
+	private val stackPane: StackPane
 
 	init {
 		this.center = ScrollPane(
-			AccountArea
+			StackPane(
+				// Content
+			).apply {
+				stackPane = this
+			}
 		).apply {
-			scrollPane = this
 			this.maxWidth = 1300.0
 			this.isFitToWidth = true
 			this.background = Background.fill(Color.TRANSPARENT)
 
-			Internal.settingGroups[0].setActive(true)
 		}
+
+		Internal.settingGroups[0].setActive(true)
+		setContent(Internal.settingGroups[0].content)
 	}
 
 	fun setContent(content: Node) {
-		scrollPane.content = content
+		MultiStack.setStackPaneView(content, stackPane)
 	}
 
 //	fun scrollToGroup(group : String) {

@@ -1,7 +1,6 @@
 package spg.client.view
 
 import javafx.animation.FadeTransition
-import javafx.animation.PauseTransition
 import javafx.beans.binding.Bindings
 import javafx.geometry.Insets
 import javafx.scene.Node
@@ -11,7 +10,6 @@ import javafx.scene.layout.CornerRadii
 import javafx.scene.layout.StackPane
 import javafx.util.Duration
 import spg.client.model.Settings
-import spg.client.view.template.ViewPane
 import spg.client.view.utility.AnyTransition
 import spg.client.view.utility.Interpolator
 import spg.client.view.utility.MultiStack
@@ -72,7 +70,7 @@ object SidebarView : StackPane() {
 		return this.children.firstOrNull()
 	}
 
-	fun setView(view: Node) {
+	private fun setView(view: Node) {
 		MultiStack.setStackPaneView(view, this)
 	}
 }

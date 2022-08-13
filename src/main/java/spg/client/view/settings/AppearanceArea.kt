@@ -1,5 +1,10 @@
 package spg.client.view.settings
 
+import javafx.beans.binding.Bindings
+import javafx.geometry.Insets
+import javafx.scene.layout.Background
+import javafx.scene.layout.BackgroundFill
+import javafx.scene.layout.CornerRadii
 import javafx.scene.layout.VBox
 import spg.client.model.Settings
 import spg.client.view.SettingsView.SettingsItem
@@ -18,6 +23,18 @@ object AppearanceArea : VBox() {
                     ColorField(it.value.color)
                 )
             }
+        )
+
+        this.backgroundProperty().bind(
+            Bindings.createObjectBinding({
+                Background(
+                    BackgroundFill(
+                        Settings.colors["Secondary Color"]!!.color.value,
+                        CornerRadii(10.0),
+                        Insets.EMPTY
+                    )
+                )
+            }, Settings.colors["Secondary Color"]!!.color)
         )
     }
 }

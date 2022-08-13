@@ -4,6 +4,7 @@ import javafx.beans.binding.Bindings
 import javafx.event.EventHandler
 import javafx.geometry.Insets
 import javafx.geometry.Pos
+import javafx.scene.Cursor
 import javafx.scene.control.ListCell
 import javafx.scene.control.ListView
 import javafx.scene.control.ScrollPane
@@ -61,6 +62,7 @@ object SettingsSidebarView : VBox() {
 						item.group
 					)
 				).apply {
+					this.cursor = Cursor.HAND
 					this.alignment = Pos.CENTER_LEFT
 					this.spacing = 10.0
 					this.padding = Insets(15.0)
