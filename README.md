@@ -1,4 +1,7 @@
-<h1 align=center>Whörld Wide Messenger</h1>
+<h1 align=center>This Project has been renamed and moved to another repo (it's not dead)</h1>
+
+
+<h2 align=center>Whörld Wide Messenger</h2>
 
 Welcome to our highly secure community-driven messenger service!
 
