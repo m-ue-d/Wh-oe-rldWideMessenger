@@ -6,7 +6,7 @@ Welcome to our highly secure community-driven messenger service!
 
 ### 💬 About the project
 
-Whörld Wide Messenger is a community-driven messenger service with latest security standards in mind, written 100% in ☕ Java / Kotlin. It uses decentralized, optionally self-hosted servers for your friends to join and hang out together. More information can be found on our website https://www.wwm.dev
+Whörld Wide Messenger is a community-driven messenger service with latest security standards in mind, written 100% in ☕ Java / Kotlin. It uses decentralized, optionally self-hosted servers for your friends to join and hang out together. More information can be found on our website https://www.xyz.dev
 
 ### 🎯 Our mission 
 
