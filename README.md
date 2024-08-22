@@ -1,4 +1,4 @@
-<h1 align=center>This Project has been renamed and moved to <a href="https://github.com/Heast-Messenger/Heast">another repo</a> (it's not dead)</h1>
+<h1 align=center>This Project has been renamed and moved to <a href="https://github.com/Heast-Messenger/Heast">another repo</a></h1>
 
 <h2 align=center>Whörld Wide Messenger</h2>
 
